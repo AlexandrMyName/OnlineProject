@@ -17,7 +17,10 @@ public class GameWindow : MonoBehaviour
         _removeProfileInfo.onClick.AddListener(() =>
         {
             if (PlayerPrefs.HasKey("tw_autoLogin"))
-                PlayerPrefs.DeleteKey("tw_autoLogin");
+            {
+                PlayerPrefs.DeleteAll();
+                PlayerPrefs.Save();
+            }
 
             PlayFabClientAPI.ForgetAllCredentials();
             _enterInGameView.ChangeView(TadWhat.TypeOfButton.LogIN);

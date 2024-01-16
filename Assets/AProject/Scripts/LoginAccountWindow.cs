@@ -39,17 +39,13 @@ namespace TadWhat.LoginAccountView
 
         [SerializeField] private GameObject _enterInGameWindow;
 
+
         private void Awake()
         {
 
             _passwordField.onValueChanged.AddListener(value => { _password = value; });
             _nameField.onValueChanged.AddListener(value => { _userName = value; });
-
-            _loginRequest = SecurityCheckFiles();
-
-            if (PlayerPrefs.HasKey("tw_autoLogin"))
-                LogIN();// Auto try
-
+  
         }
 
         private void OnEnable()
@@ -59,6 +55,8 @@ namespace TadWhat.LoginAccountView
                 _nameField.text = _userName;
             }
         }
+
+
         private void Start()
         {
 
@@ -82,19 +80,22 @@ namespace TadWhat.LoginAccountView
         }
 
 
-        public void LogIN()
+        public void LogIN(bool auto = false)
         {
 
-            if (_loginRequest != null)
-            {
-                _loadingObject.SetActive(true);
-                LogInWithRequest(_loginRequest);
-            }
-            else
-            {
-                _loginRequest = SecurityCheckFiles();
-                
-            }
+            _loadingObject.SetActive(true);
+             
+                try
+                {
+                    _loginRequest = SecurityCheckFiles(auto);
+                    LogInWithRequest(_loginRequest);
+                }
+                catch
+                {
+                    _loadingObject.SetActive(false);
+                    Debug.LogError("Произошла неизвестная ошибка автоматического входа");
+                }
+            
         }
 
 
@@ -126,7 +127,7 @@ namespace TadWhat.LoginAccountView
         }
 
 
-        private LoginWithPlayFabRequest SecurityCheckFiles()
+        private LoginWithPlayFabRequest SecurityCheckFiles(bool auto)
         {
 
             var salt = "";
@@ -152,15 +153,16 @@ namespace TadWhat.LoginAccountView
                     var xml = XmlConverter.Create(fullPath);
                     var secret = xml.Load(new XmlSecrets(), "xml");
 
+                    if (!auto) { 
+                        if(_password != secret.Password || _userName != secret.User_Name)
+                        {
+                            string warn = "<color=red>Похоже локальные данные не совпадают</color> \n" +
+                           "проверьте пароль или имя пользователя";
 
-                    if(_password != secret.Password || _userName != secret.User_Name)
-                    {
-                        string warn = "<color=red>Похоже локальные данные не совпадают</color> \n" +
-                       "проверьте пароль или имя пользователя";
-
-                        _warningText.text = warn;
-
-                        return null;
+                            _warningText.text = warn;
+ 
+                            return null;
+                        }
                     }
 
                     shaID = secret.SHA_publicKey;
@@ -168,9 +170,7 @@ namespace TadWhat.LoginAccountView
 
                     _password = secret.Password;
                     _userName = secret.User_Name;
-
-                    PlayerPrefs.SetString("salt_KEY",secret.Salt_Key);
-                    PlayerPrefs.SetString("sha_KEY",secret.SHA_publicKey);
+                     
                 }
                  catch
                 {
