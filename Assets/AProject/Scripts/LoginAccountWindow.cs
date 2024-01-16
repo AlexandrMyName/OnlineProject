@@ -111,8 +111,8 @@ namespace TadWhat.LoginAccountView
                     //_warningText.text = warn;
                     _hidenObjectsOnSuccess.ForEach(obj => obj.SetActive(false));
                     _shownObjectsOnSuccess.ForEach(obj => obj.SetActive(true));
-                    _successText.text = "Вы успешно вошли в систему! \n" +
-                    "Добро пожаловать " + _userName;
+                    _successText.text = "<color=green>Вы успешно вошли в систему!</color> \n" +
+                    $"Добро пожаловать <color=yellow>{_userName}</color>";
                     _loadingObject.SetActive(false);
 
                   
