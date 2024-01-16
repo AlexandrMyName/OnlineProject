@@ -17,7 +17,7 @@ namespace TadWhat.LoginAccountView
     {
 
         [SerializeField] private Button _logIn_button;
-
+        [SerializeField] private Button _back_button;
         [SerializeField] private string _password;
         [SerializeField] private string _userName;
 
@@ -35,6 +35,8 @@ namespace TadWhat.LoginAccountView
 
         [SerializeField] private GameObject _loadingObject;
 
+        [SerializeField] private GameObject _enterInGameWindow;
+
         private void Awake()
         {
 
@@ -42,7 +44,9 @@ namespace TadWhat.LoginAccountView
             _nameField.onValueChanged.AddListener(value => { _userName = value; });
 
             _loginRequest = SecurityCheckFiles();
-            LogIN();// Auto try
+
+            if (PlayerPrefs.HasKey("tw_autoLogin"))
+                LogIN();// Auto try
 
         }
 
@@ -53,6 +57,12 @@ namespace TadWhat.LoginAccountView
             _logIn_button.onClick.AddListener(() =>
             {
                 LogIN();
+            });
+
+            _back_button.onClick.AddListener(() =>
+            {
+                _enterInGameWindow.SetActive(true);
+                this.gameObject.SetActive(false);
             });
         }
 
@@ -75,6 +85,9 @@ namespace TadWhat.LoginAccountView
                         _successText.text = "Вы успешно вошли в систему! \n" +
                         "Добро пожаловать " + _userName;
                         _loadingObject.SetActive(false);
+
+                        if (!PlayerPrefs.HasKey("tw_autoLogin"))
+                            PlayerPrefs.SetString("tw_autoLogin","true");
                     },
                     err =>
                     {
@@ -140,6 +153,12 @@ namespace TadWhat.LoginAccountView
                 Password = ProtectorAES.GetSaltedHashPassword(salt, _password),
                 Username = _userName,
             };
+        }
+        private void OnDestroy()
+        {
+            _back_button.onClick.RemoveAllListeners();
+
+            _logIn_button.onClick.RemoveAllListeners();
         }
     }
 }

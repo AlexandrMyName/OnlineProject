@@ -20,6 +20,7 @@ namespace TadWhat.CreateAccountView
         [SerializeField] private TMP_InputField _passwordInput;
 
         [SerializeField] private Button _acceptButton;
+        [SerializeField] private Button _back_button;
         [SerializeField] private TMP_Text _resultText;
         [SerializeField] private GameObject _loadingObject;
 
@@ -31,6 +32,8 @@ namespace TadWhat.CreateAccountView
 
         [SerializeField] private List<GameObject> _shownObjectsOnSuccess;
 
+        [SerializeField] private GameObject _enterInGameWindow;
+
 
         private void Start()
         {
@@ -41,6 +44,11 @@ namespace TadWhat.CreateAccountView
 
             _passwordInput.onValueChanged.AddListener(value => { _password = value; });
 
+            _back_button.onClick.AddListener(() =>
+            {
+                _enterInGameWindow.SetActive(true);
+                this.gameObject.SetActive(false);
+            });
 
             _acceptButton.onClick.AddListener(() =>
             {
@@ -90,6 +98,7 @@ namespace TadWhat.CreateAccountView
                     PlayerPrefs.SetString("publicSHA_KEY", ProtectorAES.PublicKey);
                     PlayerPrefs.SetString("tw_password", _password);
                     PlayerPrefs.SetString("tw_userName", _userName);
+                    PlayerPrefs.SetString("tw_autoLogin", "true");
 
                 }, err =>
                 {
@@ -101,6 +110,8 @@ namespace TadWhat.CreateAccountView
                         PlayerPrefs.DeleteKey("salt_KEY");
                     if (PlayerPrefs.HasKey("publicSHA_KEY"))
                         PlayerPrefs.DeleteKey("publicSHA_KEY");
+                    if (PlayerPrefs.HasKey("tw_autoLogin"))
+                        PlayerPrefs.DeleteKey("tw_autoLogin");
                 });
             });
         }
@@ -108,8 +119,8 @@ namespace TadWhat.CreateAccountView
         private void OnDestroy()
         {
             _acceptButton.onClick.RemoveAllListeners();
-            
 
+            _back_button.onClick.RemoveAllListeners();
         }
     }
 }

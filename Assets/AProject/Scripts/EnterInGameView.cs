@@ -23,7 +23,11 @@ namespace TadWhat.EnterView
         private void Start()
         {
 
-            _logInView.GetComponent<LoginAccountWindow>().LogIN(); // Auto try
+            if (PlayerPrefs.HasKey("tw_autoLogin"))
+            {
+                _logInView.GetComponent<LoginAccountWindow>().LogIN(); // Auto try
+            }
+
 
             _createAccBut.onClick.AddListener(() =>
             {
@@ -37,7 +41,7 @@ namespace TadWhat.EnterView
         }
 
 
-        private void ChangeView(TypeOfButton buttonType = TypeOfButton.LogIN)
+        public void ChangeView(TypeOfButton buttonType = TypeOfButton.LogIN)
         {
 
             if (buttonType == TypeOfButton.LogIN)
