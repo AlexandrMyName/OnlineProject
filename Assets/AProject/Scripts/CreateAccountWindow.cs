@@ -1,4 +1,5 @@
 using Cryptograph;
+using Cryptograph.Xml;
 using PlayFab;
 using System.Collections.Generic;
 using System.IO;
@@ -57,6 +58,7 @@ namespace TadWhat.CreateAccountView
                 var user = ProtectorAES.Register(_userName, _password);
 
                 _loadingObject.SetActive(true);
+
                 PlayFabClientAPI.RegisterPlayFabUser(new PlayFab.ClientModels.RegisterPlayFabUserRequest()
                 {
                     Email = _email,
@@ -79,14 +81,8 @@ namespace TadWhat.CreateAccountView
                         User_Name = _userName
                     };
 
-                    XmlSerializer xml = new XmlSerializer(typeof(XmlSecrets));
-
-                    
-                    using (var streamData = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.Write))
-                    {
-                        using (var brottlyAl = new BrotliStream(streamData,CompressionMode.Compress))
-                            xml.Serialize(streamData, secret);
-                    }
+                    var xml = XmlConverter.Create(fullPath);
+                    xml.Save(secret, "xml");
 
                     Debug.LogWarning("Success created account!");
 

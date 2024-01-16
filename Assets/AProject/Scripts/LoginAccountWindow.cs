@@ -10,6 +10,8 @@ using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Text;
+using Cryptograph.Xml;
 
 namespace TadWhat.LoginAccountView
 {
@@ -126,24 +128,17 @@ namespace TadWhat.LoginAccountView
                 var path = Application.dataPath;
                 var fullPath = Path.Combine(path, "secret.xml");
 
-                XmlSecrets secret;
-
-                XmlSerializer xml = new XmlSerializer(typeof(XmlSecrets));
-
-                if (File.Exists(fullPath))
+                try
                 {
-                    using (var streamData = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
-                    {
-                        using (var brottlyAl = new BrotliStream(streamData, CompressionMode.Decompress))
-                            secret = (XmlSecrets)xml.Deserialize(streamData);
-                    }
+                    var xml = XmlConverter.Create(fullPath);
+                    var secret = xml.Load(new XmlSecrets(), "xml");
 
                     shaID = secret.SHA_publicKey;
                     salt = secret.Salt_Key;
                     _password = secret.Password;
                     _userName = secret.User_Name;
                 }
-                else
+                 catch
                 {
                     string warn = "File with secure keys not exist \n" +
                         "sha key and salt is <color=red> empty! </color>";

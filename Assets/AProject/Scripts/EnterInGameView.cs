@@ -26,6 +26,7 @@ namespace TadWhat.EnterView
             if (PlayerPrefs.HasKey("tw_autoLogin"))
             {
                 _logInView.GetComponent<LoginAccountWindow>().LogIN(); // Auto try
+                _createAccBut.interactable = false;
             }
 
 
