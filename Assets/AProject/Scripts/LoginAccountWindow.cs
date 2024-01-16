@@ -66,6 +66,12 @@ namespace TadWhat.LoginAccountView
             });
         }
 
+        private void OnDisable()
+        {
+            _successText.text = "";
+            _warningText.text = "";
+        }
+
 
         public void LogIN()
         {
@@ -79,7 +85,7 @@ namespace TadWhat.LoginAccountView
                     {
                         var warn = "<color=red>>Succes</color> auto login!";
                         Debug.LogWarning(warn);
-                        _warningText.text = warn;
+                        //_warningText.text = warn;
                         _hidenObjectsOnSuccess.ForEach(obj => obj.SetActive(false));
                         _shownObjectsOnSuccess.ForEach(obj => obj.SetActive(true));
                         _successText.text = "Вы успешно вошли в систему! \n" +

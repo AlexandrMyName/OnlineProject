@@ -53,6 +53,7 @@ namespace TadWhat.CreateAccountView
             _acceptButton.onClick.AddListener(() =>
             {
 
+                _resultText.text = "";
                 var user = ProtectorAES.Register(_userName, _password);
 
                 _loadingObject.SetActive(true);
@@ -115,6 +116,12 @@ namespace TadWhat.CreateAccountView
                 });
             });
         }
+        private void OnDisable()
+        {
+            _resultText.text = "";
+        }
+
+
 
         private void OnDestroy()
         {
