@@ -13,16 +13,19 @@ namespace Cryptograph.Xml
     {
 
         private string _path;
-        private XmlConverter(string path) => _path = path;
 
+
+        private XmlConverter(string path) => _path = path;
 
         public static XmlConverter Create(string fullPath)
         {
             return new XmlConverter(fullPath);
         }
 
+
         private string SerializeObjectToSTR<T>(T objectForDesirialization)
         {
+
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
             MemoryStream memoryStream = new MemoryStream();
             XmlTextWriter xmlText = new XmlTextWriter(memoryStream, Encoding.Unicode);
@@ -34,6 +37,7 @@ namespace Cryptograph.Xml
 
         private object DesirializeObject<T>(string str)
         {
+
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
             MemoryStream memoryStream = new MemoryStream(GetBytes(str));
             return xmlSerializer.Deserialize(memoryStream);
@@ -42,6 +46,7 @@ namespace Cryptograph.Xml
 
         private string LoadStr(string pswrd)
         {
+
             using (StreamReader reader = File.OpenText(_path))
             {
                 string str = reader.ReadToEnd();
@@ -52,6 +57,7 @@ namespace Cryptograph.Xml
 
         private void SaveStr(string str, string pswrd)
         {
+
             using (StreamWriter writer = File.CreateText(_path))
             {
                 writer.Write(ProtectorAES.Encrypt(str,pswrd));
@@ -70,6 +76,7 @@ namespace Cryptograph.Xml
          
         public void Save<T>(T objectForSerialization, string pswrd)
         {
+
             if (_path == null) throw new Exception("You should create KeyGen | Path not found..");
             string str = SerializeObjectToSTR<T>(objectForSerialization);
             SaveStr(str,pswrd);
@@ -78,6 +85,7 @@ namespace Cryptograph.Xml
 
         public T Load<T>(T objectForDesirialization, string pswrd)
         {
+
             if (HasFile)
             {
 

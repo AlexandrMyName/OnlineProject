@@ -52,7 +52,13 @@ namespace TadWhat.LoginAccountView
 
         }
 
-
+        private void OnEnable()
+        {
+            if(_userName.Length > 0)
+            {
+                _nameField.text = _userName;
+            }
+        }
         private void Start()
         {
 
@@ -68,6 +74,7 @@ namespace TadWhat.LoginAccountView
             });
         }
 
+
         private void OnDisable()
         {
             _successText.text = "";
@@ -81,29 +88,41 @@ namespace TadWhat.LoginAccountView
             if (_loginRequest != null)
             {
                 _loadingObject.SetActive(true);
-                PlayFabClientAPI.LoginWithPlayFab(_loginRequest,
-
-                    res =>
-                    {
-                        var warn = "<color=red>>Succes</color> auto login!";
-                        Debug.LogWarning(warn);
-                        //_warningText.text = warn;
-                        _hidenObjectsOnSuccess.ForEach(obj => obj.SetActive(false));
-                        _shownObjectsOnSuccess.ForEach(obj => obj.SetActive(true));
-                        _successText.text = "Вы успешно вошли в систему! \n" +
-                        "Добро пожаловать " + _userName;
-                        _loadingObject.SetActive(false);
-
-                        if (!PlayerPrefs.HasKey("tw_autoLogin"))
-                            PlayerPrefs.SetString("tw_autoLogin","true");
-                    },
-                    err =>
-                    {
-                        Debug.LogWarning($"Err!  <color=red>{err.ErrorMessage}</color>");
-                        _warningText.text = $"Err!  <color=red>{err.ErrorMessage}</color>";
-                        _loadingObject.SetActive(false);
-                    });
+                LogInWithRequest(_loginRequest);
             }
+            else
+            {
+                _loginRequest = SecurityCheckFiles();
+                
+            }
+        }
+
+
+        private void LogInWithRequest(LoginWithPlayFabRequest request)
+        {
+
+            PlayFabClientAPI.LoginWithPlayFab(request,
+
+                res =>
+                {
+                    var warn = "<color=red>>Succes</color> auto login!";
+                    Debug.LogWarning(warn);
+                    //_warningText.text = warn;
+                    _hidenObjectsOnSuccess.ForEach(obj => obj.SetActive(false));
+                    _shownObjectsOnSuccess.ForEach(obj => obj.SetActive(true));
+                    _successText.text = "Вы успешно вошли в систему! \n" +
+                    "Добро пожаловать " + _userName;
+                    _loadingObject.SetActive(false);
+
+                  
+                        PlayerPrefs.SetString("tw_autoLogin", "true");
+                },
+                err =>
+                {
+                    Debug.LogWarning($"Err!  <color=red>{err.ErrorMessage}</color>");
+                    _warningText.text = $"Err!  <color=red>{err.ErrorMessage}</color>";
+                    _loadingObject.SetActive(false);
+                });
         }
 
 
@@ -133,10 +152,25 @@ namespace TadWhat.LoginAccountView
                     var xml = XmlConverter.Create(fullPath);
                     var secret = xml.Load(new XmlSecrets(), "xml");
 
+
+                    if(_password != secret.Password || _userName != secret.User_Name)
+                    {
+                        string warn = "<color=red>Похоже локальные данные не совпадают</color> \n" +
+                       "проверьте пароль или имя пользователя";
+
+                        _warningText.text = warn;
+
+                        return null;
+                    }
+
                     shaID = secret.SHA_publicKey;
                     salt = secret.Salt_Key;
+
                     _password = secret.Password;
                     _userName = secret.User_Name;
+
+                    PlayerPrefs.SetString("salt_KEY",secret.Salt_Key);
+                    PlayerPrefs.SetString("sha_KEY",secret.SHA_publicKey);
                 }
                  catch
                 {
