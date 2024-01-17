@@ -21,17 +21,17 @@ MonoBehaviour:
     TopSide: {x: 0, y: 0}
     BottomSide: {x: 0, y: 0}
   - BlockType: 1
-    LeftSide: {x: 0, y: 0}
-    RightSide: {x: 0, y: 0}
-    FrontSide: {x: 0, y: 0}
-    BackSide: {x: 0, y: 0}
-    TopSide: {x: 0, y: 0}
-    BottomSide: {x: 0, y: 0}
+    LeftSide: {x: 3, y: 2}
+    RightSide: {x: 3, y: 2}
+    FrontSide: {x: 3, y: 2}
+    BackSide: {x: 3, y: 2}
+    TopSide: {x: 4, y: 2}
+    BottomSide: {x: 4, y: 2}
   - BlockType: 2
-    LeftSide: {x: 0, y: 0}
-    RightSide: {x: 0, y: 0}
-    FrontSide: {x: 0, y: 0}
-    BackSide: {x: 0, y: 0}
+    LeftSide: {x: 0, y: 11}
+    RightSide: {x: 0, y: 11}
+    FrontSide: {x: 0, y: 11}
+    BackSide: {x: 0, y: 11}
     TopSide: {x: 0, y: 0}
     BottomSide: {x: 0, y: 0}
   - BlockType: 3
@@ -55,7 +55,7 @@ MonoBehaviour:
     BackSide: {x: 0, y: 0}
     TopSide: {x: 0, y: 0}
     BottomSide: {x: 0, y: 0}
-  TableWidth: 5
-  TableHeight: 5
-  TableWaterWidth: 5
-  TableWaterHeight: 5
+  TableWidth: 4
+  TableHeight: 4
+  TableWaterWidth: 4
+  TableWaterHeight: 4
