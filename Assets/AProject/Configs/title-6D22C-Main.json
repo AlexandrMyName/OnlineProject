@@ -1,0 +1,35 @@
+{
+  "CatalogVersion": "Main",
+  "Catalog": [
+    {
+      "ItemId": "Gold_id",
+      "ItemClass": "Gold",
+      "CatalogVersion": "Main",
+      "DisplayName": "Gold",
+      "Description": "100 Gold for you",
+      "VirtualCurrencyPrices": {
+        "SC": 300
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"GoldCurrency\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": true,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    }
+  ],
+  "DropTables": []
+}
