@@ -53,6 +53,7 @@ public class GameWindow : MonoBehaviour
 
             _adminAPI_button.onClick.AddListener(() =>
             {
+                
                 _adminEditorView.Init();
                 this.gameObject.SetActive(false);
                 _adminEditorView.gameObject.SetActive(true);

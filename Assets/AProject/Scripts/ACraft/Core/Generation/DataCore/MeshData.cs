@@ -14,8 +14,7 @@ namespace Core.Models
         public List<Vector3> WaterVerticals { get; set; }
         public List<int> WaterTriangles { get; set; }
         public List<Vector2> WaterUvs { get; set; }
-
-
+         
         public void SetVertexBufferData(List<Vector3> verticals) => Verticals = verticals;
         public void SetTriangleBufferData(List<int> triangles) => Triangles = triangles;
         public void SetUVSBufferData(List<Vector2> uvs) => Uvs = uvs;

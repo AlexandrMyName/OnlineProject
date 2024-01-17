@@ -79,6 +79,8 @@ namespace Core.Crafting
                         meshData.Triangles.ToArray();
                         meshData.Uvs.ToArray();
 
+                        data.Render.SaveMeshToXML();
+
                         Debug.LogWarning($"<color=green>Кол-во вершин </color>: <color=red>{meshData.Verticals.Count} </color>");
                         Debug.LogWarning($"<color=green>Кол-во треугольников </color>: <color=red>{meshData.Triangles.Count} </color>");
                         Debug.LogWarning($"<color=green>Кол-во UV координат </color>: <color=red>{meshData.Uvs.Count} </color>");

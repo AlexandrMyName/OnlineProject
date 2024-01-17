@@ -42,12 +42,12 @@ MonoBehaviour:
     TopSide: {x: 0, y: 0}
     BottomSide: {x: 0, y: 0}
   - BlockType: 7
-    LeftSide: {x: 0, y: 0}
-    RightSide: {x: 0, y: 0}
-    FrontSide: {x: 0, y: 0}
-    BackSide: {x: 0, y: 0}
-    TopSide: {x: 0, y: 0}
-    BottomSide: {x: 0, y: 0}
+    LeftSide: {x: 3, y: 3}
+    RightSide: {x: 3, y: 3}
+    FrontSide: {x: 3, y: 3}
+    BackSide: {x: 3, y: 3}
+    TopSide: {x: 3, y: 3}
+    BottomSide: {x: 3, y: 3}
   - BlockType: 8
     LeftSide: {x: 0, y: 0}
     RightSide: {x: 0, y: 0}

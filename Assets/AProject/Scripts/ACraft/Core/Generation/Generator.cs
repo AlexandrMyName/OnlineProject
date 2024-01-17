@@ -1,11 +1,13 @@
 using Core.Models;
+using Cryptograph;
 using Photon.Pun.Demo.Procedural;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Unity.Burst.CompilerServices;
+ 
 using UnityEngine;
+ 
 
 
 namespace Core.Generation
@@ -30,7 +32,8 @@ namespace Core.Generation
         private TextureDataConfig _textureConfig;
         private Vector3Int BoundsChunck;
         private GameObject _loadObj;
-
+        private GameObject _saveObj;
+        private bool _isLoadingProccess;
 
         public Generator(Transform playerTransform, Material blocksMaterial,Material waterMaterial, Transform worldParrent, MonoBehaviour initializer, TextureDataConfig textureConfig)
         {
@@ -45,7 +48,8 @@ namespace Core.Generation
         }
 
 
-        public void WorldSetUp(WorldChunckObjects objects, bool isGenerateOne = true, int radiusGeneration = 5, GameObject loadObj = null)
+        public void WorldSetUp(WorldChunckObjects objects, bool isGenerateOne = true, int radiusGeneration = 5,
+            GameObject loadObj = null, GameObject saveObj = null)
         {
           
             _worldObjects = objects;
@@ -53,6 +57,7 @@ namespace Core.Generation
            
             _initializer.StartCoroutine(SetPlayerPosition());
             _loadObj = loadObj;
+            _saveObj = saveObj;
             if (isGenerateOne) Generate();
          
         
@@ -80,7 +85,32 @@ namespace Core.Generation
 
         public void RunEditGeneration()
         {
-            TryDequeueMeshData();
+            TryDequeueMeshDataForChunck();
+            bool isSaving = false;
+            foreach(var data in _worldObjects.ChunckData)
+            {
+                if(data.Value != null)
+                {
+                    if(data.Value.Render != null)
+                    {
+                        if (data.Value.Render.IsSaveProccess)
+                        {
+                            isSaving = true;
+                        }
+                    }
+                }
+            }
+            if(_saveObj != null)
+                _saveObj.SetActive(isSaving);
+
+            if (_isLoadingProccess)
+            {
+                _loadObj.SetActive(true);
+            }
+            else
+            {
+                _loadObj.SetActive(false);
+            }
         }
 
 
@@ -90,6 +120,7 @@ namespace Core.Generation
             {
                 Debug.LogWarning("<color=green> Высвобождение коллекции потока</color>");
                 GameObject generationObject = new("Gen");
+
                 GameObject generationWaterObject = new("WaterGen");
 
                 generationObject.transform.SetParent(_worldParrent, false);
@@ -134,6 +165,42 @@ namespace Core.Generation
                 _worldObjects.Chuncks.Add(meshData.ChunckPosition, generationObject);
                 //Добавить water объект в пул (хранилище)
 
+                if (_loadObj != null) _loadObj.SetActive(false);
+            }
+        }
+
+
+        private void TryDequeueMeshDataForChunck()
+        {
+
+            if (_meshDataQueue.TryDequeue(out MeshData meshData))
+            {
+                Debug.LogWarning("<color=green> Высвобождение коллекции потока</color>");
+                GameObject generationObject = new("Gen");
+
+             
+                generationObject.transform.SetParent(_worldParrent, false);
+              
+                generationObject.transform.position = meshData.WorldPositionStay;
+                
+                Mesh mesh = new Mesh();
+                MeshFilter filter = generationObject.AddComponent<MeshFilter>();
+                MeshRenderer render = generationObject.AddComponent<MeshRenderer>();
+                MeshCollider collider = generationObject.AddComponent<MeshCollider>();
+                 
+                render.material = _chuncksMaterial;
+                filter.mesh = mesh;
+                mesh.vertices = meshData.Verticals.ToArray();
+                mesh.triangles = meshData.Triangles.ToArray();
+                mesh.uv = meshData.Uvs.ToArray();
+
+                mesh.RecalculateNormals();
+                mesh.RecalculateBounds();
+                mesh.Optimize();
+                 
+                collider.sharedMesh = mesh;
+                _worldObjects.Chuncks.Add(meshData.ChunckPosition, generationObject);
+               
                 if (_loadObj != null) _loadObj.SetActive(false);
             }
         }
@@ -199,6 +266,44 @@ namespace Core.Generation
         }
 
 
+        public void GenerateExistXmlMesh(Vector3Int worldSize, XmlMesh xml)
+        {
+
+            try
+            {
+                if (_loadObj != null) _loadObj.SetActive(true);
+
+                Task.Factory.StartNew(() =>
+                {
+                   
+                    Vector2Int worldPosition = new Vector2Int(0, 0);
+                    BoundsChunck = worldSize;
+                    BlockType[,,] blocks = new BlockType[worldSize.x, worldSize.y, worldSize.z]; ;
+
+
+                    foreach (var block in xml.Blocks)
+                    {
+                        blocks[block.X_blockKey, block.Y_blockKey, block.Z_blockKey] = (BlockType)block.Value;
+                    }
+
+                    ChunckData data = new ChunckData(blocks, new Vector3(worldPosition.x, 0, worldPosition.y));
+
+                    _worldObjects.ChunckData.Add(worldPosition, data);
+                    data.ChunckPosition = worldPosition;
+                    data.Render = new ChunckRenderer(_textureConfig, 14);
+
+                    data.Render.SetExistData(xml, data);
+                    InstantiateStreamForExistRender(data, worldSize);  
+                });
+            }
+            catch(Exception ex)
+            {
+                Debug.LogWarning(ex.Message);
+            }
+
+        }
+
+
         private ChunckData GetEmptyChunkData(Vector3Int worldSize)
         {
 
@@ -218,13 +323,15 @@ namespace Core.Generation
             ChunckData data = new ChunckData(blocks, new Vector3(worldPosition.x, 0, worldPosition.y));
             _worldObjects.ChunckData.Add(worldPosition, data);
             data.ChunckPosition = worldPosition;
-            ChunckRenderer render = new(_textureConfig, 14);//Int - waterHeight
+            
             Debug.Log("<color=red>ПОТОК СОЗДАНИЯ</color> 0.0.0.0");
             return data;
         }
 
+
         private void InstantiateRenderStream(ChunckData data,bool notGame = false)
         {
+
             Task.Factory.StartNew(() =>
             {
                 ChunckRenderer render = new(_textureConfig, 14);//Int - waterHeight
@@ -246,6 +353,21 @@ namespace Core.Generation
             });
         }
 
+
+        private void InstantiateStreamForExistRender(ChunckData data, Vector3Int bounds)
+        {
+
+            Task.Factory.StartNew(() =>
+            {
+              
+                MeshData meshData = null;
+                 
+                meshData = MeshBuilder.GenerateMeshDataWithEditMode(data.Render, data, bounds);
+                
+                 
+                _meshDataQueue.Enqueue(meshData);
+            });
+        }
     }
 
 }

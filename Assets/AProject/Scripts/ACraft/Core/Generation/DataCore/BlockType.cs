@@ -1,6 +1,9 @@
 
+using System;
+
 namespace Core.Models
 {
+    [Serializable]
     public enum BlockType : byte
     {
         Air = 0,

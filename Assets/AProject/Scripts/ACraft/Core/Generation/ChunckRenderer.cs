@@ -1,5 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using System.Xml;
 using Core.Models;
+using Cryptograph;
+using Cryptograph.Xml;
+using Photon.Pun.Demo.Procedural;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -16,6 +24,7 @@ namespace Core.Generation
         private List<Vector3> _waterVerticals;
         private List<int> _waterTriangles;
 
+        public bool IsSaveProccess;
 
         public Dictionary<Vector3Int,Vector3> NormalsStairs = new Dictionary<Vector3Int, Vector3>();
 
@@ -25,16 +34,103 @@ namespace Core.Generation
         private bool _isGenerated;
 
         Vector3Int _bounds;
-
+        bool _notRegenerate;
 
         public ChunckRenderer(TextureDataConfig textureConfig, int waterHeight)
         {
             _textureRender = new TextureRenderer(textureConfig);
             _waterHeight = waterHeight;
-           
-
+            
         }
 
+
+        private void SetNormalStairs(List<XmlNormalStairs> normalStairs)
+        {
+
+            NormalsStairs = new Dictionary<Vector3Int, Vector3>();
+
+            foreach (var key in normalStairs)
+            {
+
+                NormalsStairs.Add(key.Position, key.Normal);
+               
+            }
+        }
+
+
+        public void SetExistData(XmlMesh xmlMesh, ChunckData data)
+        {
+
+            _verticals = xmlMesh.Verticals;
+            _triangles = xmlMesh.Triangles;
+            _textureRender.SetUVs(xmlMesh.Uvs);
+            data.Render = this;
+            SetNormalStairs(xmlMesh.XmlNormalStairs);
+           // _notRegenerate = true;
+        }
+
+        public void SaveMeshToXML()
+        {
+            try
+            {
+                IsSaveProccess = true;
+
+                Task.Factory.StartNew(() =>
+                {
+                     
+                    XmlMesh xmlMesh = new XmlMesh();
+
+                    xmlMesh.WorldPositionStay = _data.WorldPosition;
+                    xmlMesh.Triangles = _triangles;
+                    xmlMesh.Verticals = _verticals;
+                    xmlMesh.ChunckPosition = _data.ChunckPosition;
+                    xmlMesh.Uvs = _textureRender.GetUVs();
+                    xmlMesh.XmlNormalStairs = new List<XmlNormalStairs>();
+
+                    List<XmlBlocks> xmlBlocks = new List<XmlBlocks>();
+
+                    for (int y = 0; y < _bounds.y; y++)
+                    {
+                        for (int x = 0; x < _bounds.x; x++)
+                        {
+                            for (int z = 0; z < _bounds.z; z++)
+                            {
+                                var block = new XmlBlocks();
+                                block.X_blockKey = x;
+                                block.Y_blockKey = y;
+                                block.Z_blockKey = z;
+                                block.Value = (int)_data.Blocks[x, y, z];
+
+                                xmlBlocks.Add(block);
+
+                            }
+                        }
+                    }
+                    xmlMesh.Blocks = xmlBlocks;
+
+                    foreach (var key in NormalsStairs)
+                    {
+
+                        var norm = new XmlNormalStairs();
+                        norm.Normal = key.Value;
+                        norm.Position = key.Key;
+
+                        xmlMesh.XmlNormalStairs.Add(norm);
+                    }
+
+                    XmlConverter converter = XmlConverter.Create(Path.Combine(Application.dataPath, "mesh.xml"));
+
+                    converter.Save(xmlMesh, "MESH");
+                    IsSaveProccess = false;
+                });
+            }
+            catch(Exception ex)
+            {
+                Debug.LogWarning(ex);
+            }
+        }
+        
+        
         public MeshData Generate(ChunckData chunckData )
         {
             CreateChunck(chunckData);
@@ -163,6 +259,8 @@ namespace Core.Generation
         }
         private void Init()
         {
+
+            if(_notRegenerate) return;
             _textureRender.Dispose();
             _waterTriangles ??= new List<int>();
             _waterVerticals ??= new List<Vector3>();

@@ -1,3 +1,4 @@
+using System.Collections;
 using TadWhat.ACraft.Constructor;
 using TMPro;
 using UnityEngine;
@@ -67,14 +68,28 @@ namespace TadWhat.Auth
 
             _editMode.onClick.AddListener(() =>
             {
-                if( Mathf.Abs(_width) == 0 || Mathf.Abs(_height) == 0) return;
+                if (Mathf.Abs(_width) == 0 || Mathf.Abs(_height) == 0) return;
 
-                _chunckEditor.InitEditor(_width, _height);
-                _flyCam.enabled = true;
-                this.gameObject.SetActive(false);
+                _textInformation.text = $" загрузка... Пожалуйста подождите";
+                _textInformation2.text = $" загрузка... Пожалуйста подождите";
+                _back.gameObject.SetActive(false);
+                _editMode.gameObject.SetActive(false);
+                _widthChunck.gameObject.SetActive(false);
+                _heightChunck.gameObject.SetActive(false);
+                 
+                StartCoroutine(LoadEditor());
             });
         }
 
+
+        private IEnumerator LoadEditor()
+        {
+
+            yield return new WaitForSeconds(2);
+            _chunckEditor.InitEditor(_width, _height);
+            _flyCam.enabled = true;
+            this.gameObject.SetActive(false);
+        }
 
         private void Update()
         {

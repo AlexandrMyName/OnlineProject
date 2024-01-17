@@ -31,6 +31,8 @@ public class TextureRenderer  : IDisposable
         _waterUVs = new List<Vector2>();
     }
     public List<Vector2> GetUVs() => _uvs;
+
+    public void SetUVs(List<Vector2> uvs) => _uvs = uvs;
     public List<Vector2> GetWaterUVs() => _waterUVs;
 
     public void AddTexture(BlockType block,  SideData sideType)
