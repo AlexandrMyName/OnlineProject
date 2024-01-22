@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 
-[CreateAssetMenu(fileName = nameof(TextureDataConfig), menuName = "Configs/" + nameof(TextureDataConfig))]
+[CreateAssetMenu(fileName = nameof(TextureDataConfig) + "CNF", menuName = "Configs/Textures/" + nameof(TextureDataConfig))]
 public class TextureDataConfig : ScriptableObject
 {
     public List<TextureConfig> Configs;

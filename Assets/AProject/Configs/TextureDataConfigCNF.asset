@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14801405e17853841806f052b560d9fd, type: 3}
+  m_Name: TextureDataConfigCNF
+  m_EditorClassIdentifier: 
+  Configs:
+  - BlockType: 1
+    LeftSide: {x: 7, y: 8}
+    RightSide: {x: 7, y: 8}
+    FrontSide: {x: 7, y: 8}
+    BackSide: {x: 7, y: 8}
+    TopSide: {x: 8, y: 8}
+    BottomSide: {x: 8, y: 7}
+  - BlockType: 2
+    LeftSide: {x: 10, y: 7}
+    RightSide: {x: 10, y: 7}
+    FrontSide: {x: 10, y: 7}
+    BackSide: {x: 10, y: 7}
+    TopSide: {x: 10, y: 7}
+    BottomSide: {x: 10, y: 7}
+  - BlockType: 34
+    LeftSide: {x: 3, y: 12}
+    RightSide: {x: 3, y: 12}
+    FrontSide: {x: 3, y: 12}
+    BackSide: {x: 3, y: 12}
+    TopSide: {x: 3, y: 12}
+    BottomSide: {x: 3, y: 12}
+  - BlockType: 3
+    LeftSide: {x: 1, y: 1}
+    RightSide: {x: 1, y: 12}
+    FrontSide: {x: 1, y: 12}
+    BackSide: {x: 1, y: 12}
+    TopSide: {x: 1, y: 12}
+    BottomSide: {x: 1, y: 12}
+  - BlockType: 7
+    LeftSide: {x: 6, y: 16}
+    RightSide: {x: 6, y: 16}
+    FrontSide: {x: 6, y: 16}
+    BackSide: {x: 6, y: 16}
+    TopSide: {x: 6, y: 16}
+    BottomSide: {x: 6, y: 16}
+  - BlockType: 45
+    LeftSide: {x: 14, y: 16}
+    RightSide: {x: 14, y: 16}
+    FrontSide: {x: 14, y: 16}
+    BackSide: {x: 14, y: 16}
+    TopSide: {x: 14, y: 16}
+    BottomSide: {x: 14, y: 16}
+  - BlockType: 5
+    LeftSide: {x: 12, y: 12}
+    RightSide: {x: 12, y: 12}
+    FrontSide: {x: 12, y: 12}
+    BackSide: {x: 12, y: 12}
+    TopSide: {x: 11, y: 12}
+    BottomSide: {x: 11, y: 12}
+  - BlockType: 6
+    LeftSide: {x: 8, y: 16}
+    RightSide: {x: 8, y: 16}
+    FrontSide: {x: 8, y: 16}
+    BackSide: {x: 8, y: 16}
+    TopSide: {x: 8, y: 16}
+    BottomSide: {x: 8, y: 16}
+  - BlockType: 47
+    LeftSide: {x: 11, y: 16}
+    RightSide: {x: 11, y: 16}
+    FrontSide: {x: 11, y: 16}
+    BackSide: {x: 11, y: 16}
+    TopSide: {x: 11, y: 16}
+    BottomSide: {x: 11, y: 16}
+  - BlockType: 46
+    LeftSide: {x: 12, y: 16}
+    RightSide: {x: 12, y: 16}
+    FrontSide: {x: 12, y: 16}
+    BackSide: {x: 12, y: 16}
+    TopSide: {x: 12, y: 16}
+    BottomSide: {x: 12, y: 16}
+  TableWidth: 16
+  TableHeight: 16
+  TableWaterWidth: 5
+  TableWaterHeight: 5

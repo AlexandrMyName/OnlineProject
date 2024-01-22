@@ -51,7 +51,8 @@ namespace Core.Models
         Bush = 42,
         Cobblestone_Brick = 43,
         TNT = 44,
- 
-
+        Leave = 45,
+        WoodenDoorUP = 46,
+        WoodenDoorDOWN = 47,
     }
 }

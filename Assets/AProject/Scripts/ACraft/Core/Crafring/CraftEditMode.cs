@@ -52,8 +52,7 @@ namespace Core.Crafting
                 Vector3 centerPosition = destroy ? hit.point + hit.normal * -WorldGeneration.Scale / 2 
                     : hit.point + hit.normal * WorldGeneration.Scale / 2;// Global без учета 'scale'
                 if ((Vector3.Distance(centerPosition, _playerTransform.position) < .3f) && !destroy)  return;
-
-                Debug.LogWarning(hit.normal + "Normal");
+                 
                 Vector3Int worldPosition = Vector3Int.FloorToInt(centerPosition / WorldGeneration.Scale); // Global с учетом 'scale'
                 Vector2Int chunckPosition = _worldObjects.GetChunckContaineBlock(worldPosition); // Позиция чанка в 2D - x, z
                 
@@ -67,9 +66,7 @@ namespace Core.Crafting
                     Vector3Int localCubePosition = worldPosition - chunckOrigin;// world (позиция куба) - global chunck = локальные координаты куба
 
                     data.Blocks[localCubePosition.x, localCubePosition.y, localCubePosition.z] = destroy ? BlockType.Air : CurrentBlock.CurrentCraftingBlock;
-
                      
-                    
                     if (destroy && !save) data.Render.ClearNormalData(localCubePosition);
 
                     if (save)
@@ -89,7 +86,7 @@ namespace Core.Crafting
                     }
                     else
                     {
-                        CurrentBlock.CurrentCraftingBlock = BlockType.Grass;
+                        
                         MeshData meshData = data.Render.SetBlock(hit.normal);
                         MeshFilter filter = chunckObject.GetComponent<MeshFilter>();
                         MeshRenderer render = chunckObject.GetComponent<MeshRenderer>();

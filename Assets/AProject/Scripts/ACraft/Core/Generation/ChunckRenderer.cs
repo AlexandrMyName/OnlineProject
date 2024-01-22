@@ -288,9 +288,9 @@ namespace Core.Generation
             
 
           
-            if (type != BlockType.WoodenStaircase)
+            if (type != BlockType.WoodenStaircase && type != BlockType.WoodenDoorDOWN)
             {
-                if (type != BlockType.Water && type != BlockType.Glass_White)
+                if (type != BlockType.Water && type != BlockType.Glass_White && type != BlockType.Leave)
                 {
                     if ((GetBlockAtPosition(blockPos + Vector3Int.right) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Water) ||
@@ -323,7 +323,7 @@ namespace Core.Generation
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.WoodenStaircase) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
                 }
-                else if  (type == BlockType.Water || type == BlockType.Glass_White)
+                else if  (type == BlockType.Water || type == BlockType.Glass_White || type == BlockType.Leave)
                 {
                     //Out
                     if (GetBlockAtPosition(blockPos + Vector3Int.right) == 0)  CreateRightSide(blockPos, type);
@@ -347,6 +347,81 @@ namespace Core.Generation
             {
                 if(type == BlockType.WoodenStaircase)
                     CreateStair(blockPos, type, normal);
+
+                  
+                if(type == BlockType.WoodenDoorDOWN)
+                {
+                    if (GetBlockAtPosition(blockPos + Vector3Int.up) != 0) return;
+
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.right) == 0) ||
+                    (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Water) ||
+                    (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.WoodenStaircase) ||
+                    (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Glass_White)) CreateRightSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.left) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Glass_White)) CreateLeftSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.forward) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Glass_White)) CreateFrontSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.back) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Glass_White)) CreateBackSide(blockPos, type);
+
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.up) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Glass_White)) CreateTopSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.down) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
+
+                    // Up
+                    Debug.Log(blockPos + " DOWN");
+                    blockPos += Vector3Int.up;
+                    type = BlockType.WoodenDoorUP;
+                    
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.right) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Glass_White)) CreateRightSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.left) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Glass_White)) CreateLeftSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.forward) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Glass_White)) CreateFrontSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.back) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Glass_White)) CreateBackSide(blockPos, type);
+
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.up) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Glass_White)) CreateTopSide(blockPos, type);
+
+                    if ((GetBlockAtPosition(blockPos + Vector3Int.down) == 0) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Water) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.WoodenStaircase) ||
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
+                    Debug.Log(blockPos + " UP");
+                }
             }
 
         }
@@ -466,7 +541,9 @@ namespace Core.Generation
 
             }
         }
-        
+
+
+     
 
         #region Sides OUT
         private void CreateRightSide(Vector3Int blockPos, BlockType type, float XScale = 0, float  YScale = 0, float ZScale = 0 , float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
