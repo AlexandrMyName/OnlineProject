@@ -94,11 +94,13 @@ namespace Core.MatchMaking
 
         public void OnJoinedLobby()
         {
-            Debug.Log($"<color=green>[Присоединение к главному лобби]</color> ");
+            Debug.Log($"<color=green>[ вход в главное лобби]</color> ");
 
-            _gameRoomWithProperties = new(_loadBalancingClient);
-            _gameRoomWithProperties.CreateNewRoom("Room", 4);
-            //_cachedRoomList.Clear();
+            PhotonNetwork.LoadLevel(1);
+
+           // _gameRoomWithProperties = new(_loadBalancingClient);
+           // _gameRoomWithProperties.CreateNewRoom("Room", 4);
+
         }
 
 

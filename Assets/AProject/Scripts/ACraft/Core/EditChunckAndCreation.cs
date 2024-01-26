@@ -107,7 +107,7 @@ namespace TadWhat.ACraft.Constructor
             foreach(var chunckRef in request.Chuncks)
             {
                 
-                    if (chunckRef.MeshView == null) continue;
+                   // if (chunckRef.MeshView == null) continue;
 
                     XmlMesh xml = LoadMeshFromXML(chunckRef.FileName);
                

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TadWhat.ACraft.Constructor;
 using TadWhat.Auth;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +21,7 @@ namespace TadWhat.ACraft.ChunckEditor
 
         [SerializeField] private Button _load, _back;
 
-
+        [SerializeField] private TMP_InputField _newNameFile;
 
        
         public void InitView(FreeFlyCamera flyCam, EditChunckAndCreation chunckEditor)
@@ -72,14 +73,28 @@ namespace TadWhat.ACraft.ChunckEditor
                     }
                     
                 });
+                 
 
-                
                 if(request.Chuncks.Count > 0)
                 {
                    
                    StartCoroutine(LoadChuncks(flyCam, chunckEditor,request));
                 }
             });
+
+
+            _newNameFile.onValueChanged.AddListener(value =>
+            {
+
+                AdminView.NewChunckFileName = value + ".xml";
+
+                if(AdminView.Height == 0)
+                    AdminView.Width = 128;
+                if(AdminView.Width == 0)
+                    AdminView.Height = 30;
+            });
+
+
         }
 
 
@@ -99,6 +114,7 @@ namespace TadWhat.ACraft.ChunckEditor
 
             _back.onClick.RemoveAllListeners();
             _load.onClick.RemoveAllListeners();
+            _newNameFile.onValueChanged.RemoveAllListeners();
         }
     }
 }

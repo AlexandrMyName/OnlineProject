@@ -1,5 +1,8 @@
 using Core.MatchMaking;
 using PlayFab;
+using System.Collections;
+using System.IO;
+using TadWhat.ACraft.Constructor;
 using TadWhat.Auth;
 using TadWhat.EnterView;
 using TadWhat.Shop;
@@ -15,17 +18,22 @@ public class GameWindow : MonoBehaviour
     [SerializeField] private Button _removeProfileInfo;
     [SerializeField] private Button _shopButton;
     [SerializeField] private Button _adminAPI_button;
+    [SerializeField] private Button _lobby_button;
     [SerializeField] private AdminView _adminEditorView;
 
     [SerializeField] private EnterInGameView _enterInGameView;
    
     [SerializeField] private ShopView _shopObject;
     [SerializeField] private TMP_Text _adminInformation;
-     
-  
+
+
+    [SerializeField] private EditChunckAndCreation _chunckEditor;
+
+
     void Start()
     {
  
+         
         _removeProfileInfo.onClick.AddListener(() =>
         {
             if (PlayerPrefs.HasKey("tw_autoLogin"))
@@ -66,11 +74,8 @@ public class GameWindow : MonoBehaviour
             _adminInformation.text = $"<color=green>права администратора не доступны</color> <color=yellow> TAD WHAT </color>";
         }
     }
- 
-    private void ShowAdminView()
-    {
 
-    }
+     
 
     private void OnDestroy()
     {

@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,12 +13,15 @@ namespace Core.MatchMaking
         [SerializeField] private Button _joinLobbyButton;
         [SerializeField] private RoomListView _roomListView;
         [SerializeField] private ServerSettings _serverSettings;
-        
+        [SerializeField] private List<GameObject> _hidenObjects;
+
         private RoomListCaching _roomList;
+
+
         
 
 
-        private void Awake() => _joinLobbyButton.onClick.AddListener(() => OnJoinToMainLobby());
+        private void Awake() => _joinLobbyButton.onClick.AddListener(() => JoinToMainLobby());
 
 
         private void Update()
@@ -26,7 +30,7 @@ namespace Core.MatchMaking
         }
 
 
-        public void OnJoinToMainLobby()
+        public void JoinToMainLobby()
         {
 
             _roomList = new RoomListCaching();
