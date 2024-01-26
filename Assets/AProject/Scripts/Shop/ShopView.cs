@@ -6,8 +6,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 namespace TadWhat.Shop
 {
+
     public class ShopView : MonoBehaviour
     {
 

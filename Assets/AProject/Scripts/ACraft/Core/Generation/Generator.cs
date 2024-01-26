@@ -55,7 +55,7 @@ namespace Core.Generation
             _worldObjects = objects;
             _radiusGenerate = radiusGeneration;
            
-            _initializer.StartCoroutine(SetPlayerPosition());
+             _initializer.StartCoroutine(SetPlayerPosition());
             _loadObj = loadObj;
             _saveObj = saveObj;
             if (isGenerateOne) Generate();
@@ -175,14 +175,14 @@ namespace Core.Generation
 
             if (_meshDataQueue.TryDequeue(out MeshData meshData))
             {
-                Debug.LogWarning("<color=green> Высвобождение коллекции потока</color>");
+                Debug.LogWarning($"<color=green> Высвобождение коллекции потока вершин: {meshData.Verticals.Count} треуг.: {meshData.Triangles.Count}</color>");
                 GameObject generationObject = new("Gen");
 
              
                 generationObject.transform.SetParent(_worldParrent, false);
               
                 generationObject.transform.position = meshData.WorldPositionStay;
-                
+                Debug.LogWarning(meshData.WorldPositionStay);
                 Mesh mesh = new Mesh();
                 MeshFilter filter = generationObject.AddComponent<MeshFilter>();
                 MeshRenderer render = generationObject.AddComponent<MeshRenderer>();
@@ -199,8 +199,10 @@ namespace Core.Generation
                 mesh.Optimize();
                  
                 collider.sharedMesh = mesh;
+
+ 
                 _worldObjects.Chuncks.Add(meshData.ChunckPosition, generationObject);
-               
+              
                 if (_loadObj != null) _loadObj.SetActive(false);
             }
         }
@@ -249,10 +251,10 @@ namespace Core.Generation
 
          
          
-        public void GenerateOneEmptyChunck(Vector3Int worldSize)
+        public void GenerateOneEmptyChunck(Vector3Int size)
         {
 
-            ChunckData data = GetEmptyChunkData(worldSize);
+            ChunckData data = GetEmptyChunkData(size);
 
             try
             {
@@ -266,19 +268,27 @@ namespace Core.Generation
         }
 
 
-        public void GenerateExistXmlMesh(Vector3Int worldSize, XmlMesh xml)
+        public void GenerateExistXmlMesh(Vector3Int globalWorldPosition, XmlMesh xml)
         {
 
             try
             {
                 if (_loadObj != null) _loadObj.SetActive(true);
-
+ 
                 Task.Factory.StartNew(() =>
                 {
-                   
-                    Vector2Int worldPosition = new Vector2Int(0, 0);
-                    BoundsChunck = worldSize;
-                    BlockType[,,] blocks = new BlockType[worldSize.x, worldSize.y, worldSize.z]; ;
+                
+                    if(globalWorldPosition == null)
+                    {
+                        globalWorldPosition = Vector3Int.zero;
+                    }
+                    if (_worldObjects.ChunckData.ContainsKey(new Vector2Int((int)globalWorldPosition.x, (int)globalWorldPosition.y))){
+
+                        globalWorldPosition += Vector3Int.left * 20;
+                    }
+                    Vector2Int worldPosition = new Vector2Int((int)globalWorldPosition.x, (int)globalWorldPosition.y);
+                    
+                    BlockType[,,] blocks = new BlockType[xml.ChunckWidth, xml.ChunckHeight, xml.ChunckWidth]; ;
 
 
                     foreach (var block in xml.Blocks)
@@ -286,14 +296,19 @@ namespace Core.Generation
                         blocks[block.X_blockKey, block.Y_blockKey, block.Z_blockKey] = (BlockType)block.Value;
                     }
 
-                    ChunckData data = new ChunckData(blocks, new Vector3(worldPosition.x, 0, worldPosition.y));
+                    float xOffset = globalWorldPosition.x * WorldGeneration.Width * WorldGeneration.Scale;
+                    float zOffset = globalWorldPosition.y * WorldGeneration.Width * WorldGeneration.Scale;
+
+                    ChunckData data = new ChunckData(blocks, new Vector3(xOffset, 0, zOffset));
 
                     _worldObjects.ChunckData.Add(worldPosition, data);
+
                     data.ChunckPosition = worldPosition;
+                     
                     data.Render = new ChunckRenderer(_textureConfig, 14);
 
                     data.Render.SetExistData(xml, data);
-                    InstantiateStreamForExistRender(data, worldSize);  
+                    InstantiateStreamForExistRender(data, new Vector3Int(xml.ChunckWidth, xml.ChunckHeight, xml.ChunckWidth));  
                 });
             }
             catch(Exception ex)
@@ -304,12 +319,12 @@ namespace Core.Generation
         }
 
 
-        private ChunckData GetEmptyChunkData(Vector3Int worldSize)
+        private ChunckData GetEmptyChunkData(Vector3Int size)
         {
 
             if (_loadObj != null) _loadObj.SetActive(true);
             Vector2Int worldPosition = new Vector2Int(0, 0);
-            BoundsChunck = worldSize;
+            BoundsChunck = size;
 
             BlockType[,,] blocks = new BlockType[BoundsChunck.x, BoundsChunck.y, BoundsChunck.z];
             blocks[11, 0, 11] = BlockType.Grass;

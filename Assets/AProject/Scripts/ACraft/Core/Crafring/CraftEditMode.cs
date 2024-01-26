@@ -57,9 +57,9 @@ namespace Core.Crafting
                 Vector2Int chunckPosition = _worldObjects.GetChunckContaineBlock(worldPosition); // Позиция чанка в 2D - x, z
                 
                 GameObject chunckObject = _worldObjects.GetChunck(chunckPosition);
-
+                
                 if (chunckObject == null) return;
-
+              
                 if (_worldObjects.ChunckData.TryGetValue(chunckPosition, out var data))
                 {
                     Vector3Int chunckOrigin = new Vector3Int(chunckPosition.x, 0, chunckPosition.y) * WorldGeneration.Width; //Перевод 2D Global в 3D Global

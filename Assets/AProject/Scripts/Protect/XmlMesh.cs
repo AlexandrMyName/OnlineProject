@@ -10,6 +10,9 @@ namespace Cryptograph
     public class XmlMesh 
     {
 
+        public int ChunckWidth { get; set; }
+        public int ChunckHeight { get; set; }
+
         public List<Vector3> Verticals { get; set; }
         public List<int> Triangles { get; set; }
         public List<Vector2> Uvs { get; set; }

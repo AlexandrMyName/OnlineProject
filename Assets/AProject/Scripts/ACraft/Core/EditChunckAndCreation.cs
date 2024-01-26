@@ -6,7 +6,9 @@ using Cryptograph;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-
+using System.Xml.Serialization;
+using TadWhat.Auth;
+using System;
 
 namespace TadWhat.ACraft.Constructor
 {
@@ -65,27 +67,52 @@ namespace TadWhat.ACraft.Constructor
         }
 
 
-        public XmlMesh LoadMeshFromXML()
+        public XmlMesh LoadMeshFromXML(string name)
         {
              
-            XmlConverter converter = XmlConverter.Create(Path.Combine(Application.dataPath, "mesh.xml"));
+             
             XmlMesh xmlMesh = new();
-            return converter.Load(xmlMesh, "MESH");
+
+            var stream = new XmlSerializer(typeof(XmlMesh));
+
+            string path = Path.Combine(Application.dataPath.Replace("/Assets", "/Meshes"), $"{name}");
+
+            using (var s = new FileStream(path,  FileMode.Open ))
+            {
+
+               xmlMesh = (XmlMesh) stream.Deserialize(s);
+            }
+            return xmlMesh;
 
             
         }
+         
 
-
-        public void InitEditor(int width,int height)
+        public void CreateNewChunck(int width, int height, string fileName)
         {
-            
-            if (File.Exists(Path.Combine(Application.dataPath, "mesh.xml")))
+
+            _gen.GenerateOneEmptyChunck(new Vector3Int(width, height, width));
+
+            _inventoryBar.LoadDataBar(LoadInventoryBar(), _inventoryBarView, _iconsItemConfigs);
+            _inventoryBarView.gameObject.SetActive(true);
+            _craft = new CraftEditMode(_wco, _matChunck, _playerRoot);
+            _craft.InstallingBlocksSetUp(true);
+            _isInitEditor = true;
+        }
+
+
+        public void LoadChuncks(LoadChuncksRequest request)
+        {
+             
+            foreach(var chunckRef in request.Chuncks)
             {
-                _gen.GenerateExistXmlMesh(new Vector3Int(width, height, width), LoadMeshFromXML());
-            }
-            else
-            {
-                _gen.GenerateOneEmptyChunck(new Vector3Int(width, height, width));
+                
+                    if (chunckRef.MeshView == null) continue;
+
+                    XmlMesh xml = LoadMeshFromXML(chunckRef.FileName);
+               
+                    _gen.GenerateExistXmlMesh(Vector3Int.FloorToInt(chunckRef.WorldPosition), xml);
+ 
             }
 
             _inventoryBar.LoadDataBar(LoadInventoryBar(), _inventoryBarView, _iconsItemConfigs);

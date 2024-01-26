@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 using Core.Models;
 using Cryptograph;
 using Cryptograph.Xml;
 using Photon.Pun.Demo.Procedural;
+using TadWhat.Auth;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -66,7 +68,7 @@ namespace Core.Generation
             _textureRender.SetUVs(xmlMesh.Uvs);
             data.Render = this;
             SetNormalStairs(xmlMesh.XmlNormalStairs);
-           // _notRegenerate = true;
+          
         }
 
         public void SaveMeshToXML()
@@ -108,6 +110,9 @@ namespace Core.Generation
                     }
                     xmlMesh.Blocks = xmlBlocks;
 
+                    xmlMesh.ChunckWidth = AdminView.Width;
+                    xmlMesh.ChunckHeight = AdminView.Height;
+
                     foreach (var key in NormalsStairs)
                     {
 
@@ -117,10 +122,21 @@ namespace Core.Generation
 
                         xmlMesh.XmlNormalStairs.Add(norm);
                     }
+ 
+                    var stream = new XmlSerializer(typeof(XmlMesh));
+                    try
+                    {
+                        using (var s = new FileStream(Path.Combine(Application.dataPath.Replace("/Assets", "/Meshes"), string.IsNullOrEmpty(AdminView.NewChunckFileName) ? "mesh2.xml" :
+                            AdminView.NewChunckFileName), FileMode.OpenOrCreate))
+                        {
 
-                    XmlConverter converter = XmlConverter.Create(Path.Combine(Application.dataPath, "mesh.xml"));
-
-                    converter.Save(xmlMesh, "MESH");
+                            stream.Serialize(s, xmlMesh);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Debug.LogWarning(ex);
+                    }
                     IsSaveProccess = false;
                 });
             }
