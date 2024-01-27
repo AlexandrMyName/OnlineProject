@@ -54,5 +54,16 @@ namespace Core.Models
         Leave = 45,
         WoodenDoorUP = 46,
         WoodenDoorDOWN = 47,
+        Boards = 48,
+        Boards_Dark = 49,
+        Modern_Boards = 50,
+        Modern_Boards_Light = 51,
+        Modern_Boards_Dark = 52,
+        Modern_Stone = 53,
+        Modern_StoneTree = 54,
+        Wood = 55,
+        Wood_Dark = 56,
+        Wood_Gray = 57,
+        
     }
 }

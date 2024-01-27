@@ -295,15 +295,9 @@ namespace Core.Generation
         {
             Vector3Int blockPos = new Vector3Int(x, y, z);
             BlockType type = GetBlockAtPosition(blockPos);
-
-            
-
-
-           
+             
             if (GetBlockAtPosition(blockPos) == 0) return; //?
-            
-
-          
+             
             if (type != BlockType.WoodenStaircase && type != BlockType.WoodenDoorDOWN)
             {
                 if (type != BlockType.Water && type != BlockType.Glass_White && type != BlockType.Leave)
@@ -339,7 +333,7 @@ namespace Core.Generation
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.WoodenStaircase) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
                 }
-                else if  (type == BlockType.Water || type == BlockType.Glass_White || type == BlockType.Leave)
+                else
                 {
                     //Out
                     if (GetBlockAtPosition(blockPos + Vector3Int.right) == 0)  CreateRightSide(blockPos, type);

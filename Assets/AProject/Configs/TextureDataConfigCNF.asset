@@ -35,12 +35,12 @@ MonoBehaviour:
     TopSide: {x: 3, y: 12}
     BottomSide: {x: 3, y: 12}
   - BlockType: 3
-    LeftSide: {x: 1, y: 1}
-    RightSide: {x: 1, y: 12}
-    FrontSide: {x: 1, y: 12}
-    BackSide: {x: 1, y: 12}
-    TopSide: {x: 1, y: 12}
-    BottomSide: {x: 1, y: 12}
+    LeftSide: {x: 9, y: 8}
+    RightSide: {x: 9, y: 8}
+    FrontSide: {x: 9, y: 8}
+    BackSide: {x: 9, y: 8}
+    TopSide: {x: 9, y: 8}
+    BottomSide: {x: 9, y: 8}
   - BlockType: 7
     LeftSide: {x: 6, y: 16}
     RightSide: {x: 6, y: 16}
@@ -83,6 +83,160 @@ MonoBehaviour:
     BackSide: {x: 12, y: 16}
     TopSide: {x: 12, y: 16}
     BottomSide: {x: 12, y: 16}
+  - BlockType: 37
+    LeftSide: {x: 11, y: 15}
+    RightSide: {x: 11, y: 15}
+    FrontSide: {x: 11, y: 15}
+    BackSide: {x: 11, y: 15}
+    TopSide: {x: 11, y: 15}
+    BottomSide: {x: 11, y: 15}
+  - BlockType: 9
+    LeftSide: {x: 7, y: 15}
+    RightSide: {x: 7, y: 15}
+    FrontSide: {x: 8, y: 15}
+    BackSide: {x: 8, y: 15}
+    TopSide: {x: 9, y: 15}
+    BottomSide: {x: 9, y: 15}
+  - BlockType: 12
+    LeftSide: {x: 7, y: 9}
+    RightSide: {x: 7, y: 9}
+    FrontSide: {x: 7, y: 9}
+    BackSide: {x: 7, y: 9}
+    TopSide: {x: 7, y: 9}
+    BottomSide: {x: 7, y: 9}
+  - BlockType: 13
+    LeftSide: {x: 6, y: 8}
+    RightSide: {x: 6, y: 8}
+    FrontSide: {x: 6, y: 8}
+    BackSide: {x: 6, y: 8}
+    TopSide: {x: 6, y: 8}
+    BottomSide: {x: 6, y: 8}
+  - BlockType: 14
+    LeftSide: {x: 8, y: 9}
+    RightSide: {x: 8, y: 9}
+    FrontSide: {x: 8, y: 9}
+    BackSide: {x: 8, y: 9}
+    TopSide: {x: 8, y: 9}
+    BottomSide: {x: 8, y: 9}
+  - BlockType: 15
+    LeftSide: {x: 10, y: 9}
+    RightSide: {x: 10, y: 9}
+    FrontSide: {x: 10, y: 9}
+    BackSide: {x: 10, y: 9}
+    TopSide: {x: 10, y: 9}
+    BottomSide: {x: 10, y: 9}
+  - BlockType: 16
+    LeftSide: {x: 9, y: 9}
+    RightSide: {x: 9, y: 9}
+    FrontSide: {x: 9, y: 9}
+    BackSide: {x: 9, y: 9}
+    TopSide: {x: 9, y: 9}
+    BottomSide: {x: 9, y: 9}
+  - BlockType: 17
+    LeftSide: {x: 12, y: 9}
+    RightSide: {x: 12, y: 9}
+    FrontSide: {x: 12, y: 9}
+    BackSide: {x: 12, y: 9}
+    TopSide: {x: 12, y: 9}
+    BottomSide: {x: 12, y: 9}
+  - BlockType: 18
+    LeftSide: {x: 15, y: 9}
+    RightSide: {x: 15, y: 9}
+    FrontSide: {x: 15, y: 9}
+    BackSide: {x: 15, y: 9}
+    TopSide: {x: 15, y: 9}
+    BottomSide: {x: 15, y: 9}
+  - BlockType: 38
+    LeftSide: {x: 9, y: 16}
+    RightSide: {x: 9, y: 16}
+    FrontSide: {x: 9, y: 16}
+    BackSide: {x: 9, y: 16}
+    TopSide: {x: 9, y: 16}
+    BottomSide: {x: 9, y: 16}
+  - BlockType: 28
+    LeftSide: {x: 6, y: 6}
+    RightSide: {x: 6, y: 6}
+    FrontSide: {x: 6, y: 6}
+    BackSide: {x: 6, y: 6}
+    TopSide: {x: 6, y: 6}
+    BottomSide: {x: 6, y: 6}
+  - BlockType: 44
+    LeftSide: {x: 6, y: 8}
+    RightSide: {x: 6, y: 8}
+    FrontSide: {x: 6, y: 8}
+    BackSide: {x: 6, y: 8}
+    TopSide: {x: 7, y: 8}
+    BottomSide: {x: 7, y: 8}
+  - BlockType: 48
+    LeftSide: {x: 6, y: 16}
+    RightSide: {x: 6, y: 16}
+    FrontSide: {x: 6, y: 16}
+    BackSide: {x: 6, y: 16}
+    TopSide: {x: 6, y: 16}
+    BottomSide: {x: 6, y: 16}
+  - BlockType: 49
+    LeftSide: {x: 7, y: 16}
+    RightSide: {x: 7, y: 16}
+    FrontSide: {x: 7, y: 16}
+    BackSide: {x: 7, y: 16}
+    TopSide: {x: 7, y: 16}
+    BottomSide: {x: 7, y: 16}
+  - BlockType: 50
+    LeftSide: {x: 13, y: 14}
+    RightSide: {x: 13, y: 14}
+    FrontSide: {x: 13, y: 14}
+    BackSide: {x: 13, y: 14}
+    TopSide: {x: 13, y: 14}
+    BottomSide: {x: 13, y: 14}
+  - BlockType: 51
+    LeftSide: {x: 11, y: 14}
+    RightSide: {x: 11, y: 14}
+    FrontSide: {x: 11, y: 14}
+    BackSide: {x: 11, y: 14}
+    TopSide: {x: 11, y: 14}
+    BottomSide: {x: 11, y: 14}
+  - BlockType: 52
+    LeftSide: {x: 12, y: 14}
+    RightSide: {x: 12, y: 14}
+    FrontSide: {x: 12, y: 14}
+    BackSide: {x: 12, y: 14}
+    TopSide: {x: 12, y: 14}
+    BottomSide: {x: 12, y: 14}
+  - BlockType: 53
+    LeftSide: {x: 12, y: 7}
+    RightSide: {x: 12, y: 7}
+    FrontSide: {x: 12, y: 7}
+    BackSide: {x: 12, y: 7}
+    TopSide: {x: 12, y: 7}
+    BottomSide: {x: 12, y: 7}
+  - BlockType: 54
+    LeftSide: {x: 11, y: 7}
+    RightSide: {x: 11, y: 7}
+    FrontSide: {x: 11, y: 7}
+    BackSide: {x: 11, y: 7}
+    TopSide: {x: 11, y: 7}
+    BottomSide: {x: 11, y: 7}
+  - BlockType: 55
+    LeftSide: {x: 14, y: 12}
+    RightSide: {x: 14, y: 12}
+    FrontSide: {x: 14, y: 12}
+    BackSide: {x: 14, y: 12}
+    TopSide: {x: 13, y: 12}
+    BottomSide: {x: 13, y: 12}
+  - BlockType: 56
+    LeftSide: {x: 6, y: 12}
+    RightSide: {x: 6, y: 12}
+    FrontSide: {x: 6, y: 12}
+    BackSide: {x: 6, y: 12}
+    TopSide: {x: 5, y: 12}
+    BottomSide: {x: 5, y: 12}
+  - BlockType: 57
+    LeftSide: {x: 8, y: 12}
+    RightSide: {x: 8, y: 12}
+    FrontSide: {x: 8, y: 12}
+    BackSide: {x: 8, y: 12}
+    TopSide: {x: 7, y: 12}
+    BottomSide: {x: 7, y: 12}
   TableWidth: 16
   TableHeight: 16
   TableWaterWidth: 5
