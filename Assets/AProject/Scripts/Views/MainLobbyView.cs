@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace Core.MatchMaking
 {
 
-    public class MainLobbyView : MonoBehaviour
+    public class MainLobbyView : MonoBehaviourPun
     {
 
         [SerializeField] private Button _joinLobbyButton;
@@ -18,14 +18,18 @@ namespace Core.MatchMaking
         private RoomListCaching _roomList;
 
 
-        
 
 
-        private void Awake() => _joinLobbyButton.onClick.AddListener(() => JoinToMainLobby());
 
+        private void Awake()
+        {
+            
+            _joinLobbyButton.onClick.AddListener(() => JoinToMainLobby());
+        }
 
         private void Update()
         {
+           
             _roomList?.UpdateServices();
         }
 
@@ -34,7 +38,7 @@ namespace Core.MatchMaking
         {
 
             _roomList = new RoomListCaching();
-            _roomList.JoinLobby(_serverSettings);
+            _roomList.ConnectAndJoinLobby(_serverSettings);
             _roomListView.gameObject.SetActive(true);
             _roomListView.Init(_roomList);
         }

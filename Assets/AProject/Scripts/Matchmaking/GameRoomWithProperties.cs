@@ -1,4 +1,6 @@
+using Photon.Pun;
 using Photon.Realtime;
+using System.Diagnostics;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 
@@ -12,16 +14,14 @@ namespace Core.MatchMaking
         public const string GAME_MODE_PROP_KEY = "gm";
         public const string AI_PROP_KEY = "ai";
 
-        private LoadBalancingClient loadBalancingClient;
-
+        
 
         public GameRoomWithProperties(LoadBalancingClient loadBalancingClient)
         {
-
-            loadBalancingClient.AddCallbackTarget(this);
-
-            this.loadBalancingClient = loadBalancingClient;
-            base.LoadBalancingClient = loadBalancingClient;
+             
+            LoadBalancingClient = loadBalancingClient;
+            LoadBalancingClient.AddCallbackTarget(this);
+            PhotonNetwork.NetworkingClient = LoadBalancingClient;
         }
 
 
@@ -34,12 +34,18 @@ namespace Core.MatchMaking
         {
            
             RoomOptions roomOptions = new RoomOptions();
+            roomOptions.MaxPlayers = maxPlayersInRoom;
+            roomOptions.IsOpen = true;
+            roomOptions.PublishUserId = true;
             roomOptions.CustomRoomPropertiesForLobby = new string[] { MAP_PROP_KEY, GAME_MODE_PROP_KEY, AI_PROP_KEY };
             roomOptions.CustomRoomProperties = new Hashtable { { MAP_PROP_KEY, 1 }, { GAME_MODE_PROP_KEY, 0 } };
             EnterRoomParams enterRoomParams = new EnterRoomParams();
             enterRoomParams.RoomOptions = roomOptions;
             enterRoomParams.RoomName = name;
-            loadBalancingClient.OpCreateRoom(enterRoomParams);
+
+            LoadBalancingClient.OpJoinOrCreateRoom(enterRoomParams);
+
+            
         }
 
 
@@ -52,10 +58,25 @@ namespace Core.MatchMaking
             EnterRoomParams enterRoomParams = new EnterRoomParams();
             enterRoomParams.RoomName = roomInfo.Name;
             enterRoomParams.RoomOptions = roomOptions;
-            loadBalancingClient.OpJoinRoom(enterRoomParams);
+            LoadBalancingClient.OpJoinRoom(enterRoomParams);
         }
 
+        public override void OnCreatedRoom()
+        {
+            
+            base.OnCreatedRoom();
+            
+        }
 
+        public override void OnJoinedRoom()
+        {
+           
+            base.OnJoinedRoom();
+            UnityEngine.Debug.Log($"{LoadBalancingClient.IsConnected} IsConnected | {LoadBalancingClient.CurrentRoom.Name} CurrentRoom Name" );
+             
+
+            PhotonNetwork.LoadLevel(1); 
+        }
         public override void FindQuickGame()
         {
             LoadBalancingClient.OpJoinRandomRoom();

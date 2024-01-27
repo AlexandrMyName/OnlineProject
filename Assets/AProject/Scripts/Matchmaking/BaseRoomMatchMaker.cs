@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Core.MatchMaking
     public abstract class BaseRoomMatchMaker : IMatchmakingCallbacks
     {
 
-        protected LoadBalancingClient LoadBalancingClient;
+        public static LoadBalancingClient LoadBalancingClient;
 
 
         public abstract void FindQuickGame();
@@ -18,7 +19,7 @@ namespace Core.MatchMaking
         protected abstract void CreateRoom(string name, byte maxPlayersInRoom = 4);
           
 
-        public void OnCreatedRoom()
+        public virtual void OnCreatedRoom()
         {
             Debug.Log($"<color=green>[OnCreatedRoom]</color> ");
         }
@@ -33,10 +34,13 @@ namespace Core.MatchMaking
             Debug.Log($"<color=green>[OnFriendListUpdate]</color> ");
         }
 
-        public void OnJoinedRoom()
+        public virtual void OnJoinedRoom()
         {
-            Debug.Log($"<color=green>[OnJoinedRoom]</color> ");
+            Debug.Log($"<color=green>[OnJoinedRoom]  </color> ");
+
+             
         }
+ 
 
         public void OnJoinRandomFailed(short returnCode, string message)
         {

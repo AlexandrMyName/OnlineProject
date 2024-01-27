@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.XR;
 using UnityEngine;
 
 
@@ -18,14 +19,14 @@ namespace Core.MatchMaking
         private GameRoomWithProperties _gameRoomWithProperties;
 
 
-        public void JoinLobby(ServerSettings serverSettings)
+        public void ConnectAndJoinLobby(ServerSettings serverSettings)
         {
-
+            PhotonNetwork.AutomaticallySyncScene = true;
             _loadBalancingClient = new();
             _loadBalancingClient.AddCallbackTarget(this);
 
             _loadBalancingClient.ConnectUsingSettings(serverSettings.AppSettings);
-           
+            
         }
 
 
@@ -33,13 +34,16 @@ namespace Core.MatchMaking
         {
             _loadBalancingClient?.Service();
         }
+
+
         private void UpdateCachedRoomList(List<RoomInfo> roomList)
         {
-          
+
+            Debug.Log($"UpdateCachedRoomList ROOM !!!  {roomList.Count}");
             for (int i = 0; i < roomList.Count; i++)
             {
                 RoomInfo info = roomList[i];
-                Debug.Log(info.Name);
+                Debug.Log(info.Name + " ROOM !!!");
                 if (info.RemovedFromList)
                 {
                     _cachedRoomList.Remove(info.Name);
@@ -51,13 +55,7 @@ namespace Core.MatchMaking
             }
         }
 
-
-        private void OnButtonClickedCreateRoom()
-        {
-
-        }
-
-
+  
         public void OnConnected()
         {
             Debug.Log($"<color=green>[OnConnected]</color> ");
@@ -67,8 +65,10 @@ namespace Core.MatchMaking
         public void OnConnectedToMaster()
         {
 
+           
             Debug.Log($"<color=green>[OnConnectedToMaster]</color> ");
             _loadBalancingClient.OpJoinLobby(_customLobby);
+            
         }
 
         
@@ -95,11 +95,9 @@ namespace Core.MatchMaking
         public void OnJoinedLobby()
         {
             Debug.Log($"<color=green>[ вход в главное лобби]</color> ");
-
-            PhotonNetwork.LoadLevel(1);
-
-           // _gameRoomWithProperties = new(_loadBalancingClient);
-           // _gameRoomWithProperties.CreateNewRoom("Room", 4);
+             
+            _gameRoomWithProperties = new(_loadBalancingClient);
+            _gameRoomWithProperties.CreateNewRoom("RoomLobby", 4);
 
         }
 
@@ -107,7 +105,7 @@ namespace Core.MatchMaking
         public void OnLeftLobby()
         {
 
-            _cachedRoomList.Clear();
+           // _cachedRoomList.Clear();
         }
 
 
@@ -125,8 +123,8 @@ namespace Core.MatchMaking
 
         public void OnRoomListUpdate(List<RoomInfo> roomList)
         {
-            Debug.Log($"<color=green>[OnRoomListUpdate]</color> ");
-            UpdateCachedRoomList(roomList);
+            Debug.Log($"<color=green>[OnRoomListUpdate] Count: {roomList.Count}</color> ");
+           // UpdateCachedRoomList(roomList);
         }
 
         public void Dispose()
