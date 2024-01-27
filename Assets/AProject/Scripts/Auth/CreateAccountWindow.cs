@@ -35,9 +35,13 @@ namespace TadWhat.CreateAccountView
 
         [SerializeField] private GameObject _enterInGameWindow;
 
+        public static bool USE_ENCRYPT;
+
 
         private void Start()
         {
+
+            USE_ENCRYPT = false;
 
             _userNameInput.onValueChanged.AddListener(value => { _userName = value; });
 
@@ -55,7 +59,19 @@ namespace TadWhat.CreateAccountView
             {
 
                 _resultText.text = "";
-                var user = ProtectorAES.Register(_userName, _password);
+                User user;
+
+                if (USE_ENCRYPT)
+                     user = ProtectorAES.Register(_userName, _password);
+                else
+                {
+                    user = new User()
+                    {
+                        Name = _userName,
+                        SaltedHashedPassword = _password,
+                        Salt = ""
+                    };
+                }
 
                 _loadingObject.SetActive(true);
 
@@ -70,32 +86,37 @@ namespace TadWhat.CreateAccountView
                     _hidenObjectsOnSuccess.ForEach(obj => obj.SetActive(false));
                     _shownObjectsOnSuccess.ForEach(obj => obj.SetActive(true));
 
-                    var path = Application.dataPath;
-                    var fullPath = Path.Combine(path, "secret.xml");
-                    _loadingObject.SetActive(false);
-                    XmlSecrets secret = new XmlSecrets()
-                    {
-                        Salt_Key = user.Salt,
-                        SHA_publicKey = ProtectorAES.PublicKey,
-                        Password = _password,
-                        User_Name = _userName
-                    };
-
-                    var xml = XmlConverter.Create(fullPath);
-                    xml.Save(secret, "xml");
-
                     Debug.LogWarning("Success created account!");
 
-                    _resultText.text = $"Success created account! \n" +
-                    $" You'r Salt and SHA public key saved in: \n {fullPath}  \n" +
-                    $"If you wonna change a device, you need copy this file and go to game folder" ;
+                    if (USE_ENCRYPT)
+                    {
+                        var path = Application.dataPath;
+                        var fullPath = Path.Combine(path, "secret.xml");
+                        _loadingObject.SetActive(false);
+                        XmlSecrets secret = new XmlSecrets()
+                        {
+                            Salt_Key = user.Salt,
+                            SHA_publicKey = ProtectorAES.PublicKey,
+                            Password = _password,
+                            User_Name = _userName
+                        };
 
-                     
-                    PlayerPrefs.SetString("salt_KEY", user.Salt);
-                    PlayerPrefs.SetString("publicSHA_KEY", ProtectorAES.PublicKey);
-                    PlayerPrefs.SetString("tw_password", _password);
-                    PlayerPrefs.SetString("tw_userName", _userName);
-                    PlayerPrefs.SetString("tw_autoLogin", "true");
+                        var xml = XmlConverter.Create(fullPath);
+                        xml.Save(secret, "xml");
+
+                        
+
+                        _resultText.text = $"Success created account! \n" +
+                        $" You'r Salt and SHA public key saved in: \n {fullPath}  \n" +
+                        $"If you wonna change a device, you need copy this file and go to game folder";
+
+
+                        PlayerPrefs.SetString("salt_KEY", user.Salt);
+                        PlayerPrefs.SetString("publicSHA_KEY", ProtectorAES.PublicKey);
+                        PlayerPrefs.SetString("tw_password", _password);
+                        PlayerPrefs.SetString("tw_userName", _userName);
+                        PlayerPrefs.SetString("tw_autoLogin", "true");
+                    }
 
                 }, err =>
                 {

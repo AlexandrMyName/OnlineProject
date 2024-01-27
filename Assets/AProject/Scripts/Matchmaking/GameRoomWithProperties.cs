@@ -1,50 +1,54 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Diagnostics;
+using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 
 namespace Core.MatchMaking
 {
 
-    public class GameRoomWithProperties : BaseRoomMatchMaker 
+    public class GameRoomWithProperties : BaseRoomMatchMaker , IDisposable
     {
 
         public const string MAP_PROP_KEY = "map";
         public const string GAME_MODE_PROP_KEY = "gm";
         public const string AI_PROP_KEY = "ai";
 
-        
+        GameObject _playerFab;
 
-        public GameRoomWithProperties(LoadBalancingClient loadBalancingClient)
+        public GameRoomWithProperties( GameObject playerFab, LoadBalancingClient loadBalancingClient)
         {
-             
+             _playerFab = playerFab;
             LoadBalancingClient = loadBalancingClient;
             LoadBalancingClient.AddCallbackTarget(this);
-            PhotonNetwork.NetworkingClient = LoadBalancingClient;
+            
         }
 
 
-        public void CreateNewRoom(string roomName, byte maxPlayers)
+        public void CreateOrJoinRoom(string roomName, byte maxPlayers)
         {
-            CreateRoom(roomName, maxPlayers);
+            CreateOrJoin(roomName, maxPlayers);
         }
       
-        protected override void CreateRoom(string name,byte maxPlayersInRoom = 4)
+        protected override void CreateOrJoin(string name,byte maxPlayersInRoom = 4)
         {
            
             RoomOptions roomOptions = new RoomOptions();
-            roomOptions.MaxPlayers = maxPlayersInRoom;
+            roomOptions.MaxPlayers = 12;
             roomOptions.IsOpen = true;
             roomOptions.PublishUserId = true;
+            roomOptions.IsVisible = true;
+            
             roomOptions.CustomRoomPropertiesForLobby = new string[] { MAP_PROP_KEY, GAME_MODE_PROP_KEY, AI_PROP_KEY };
             roomOptions.CustomRoomProperties = new Hashtable { { MAP_PROP_KEY, 1 }, { GAME_MODE_PROP_KEY, 0 } };
             EnterRoomParams enterRoomParams = new EnterRoomParams();
             enterRoomParams.RoomOptions = roomOptions;
             enterRoomParams.RoomName = name;
-
-            LoadBalancingClient.OpJoinOrCreateRoom(enterRoomParams);
-
+          
+             LoadBalancingClient.OpJoinOrCreateRoom(enterRoomParams);
+            
             
         }
 
@@ -72,15 +76,20 @@ namespace Core.MatchMaking
         {
            
             base.OnJoinedRoom();
-            UnityEngine.Debug.Log($"{LoadBalancingClient.IsConnected} IsConnected | {LoadBalancingClient.CurrentRoom.Name} CurrentRoom Name" );
-             
+                if(PhotonNetwork.IsMasterClient)
+                    PhotonNetwork.LoadLevel(1);
 
-            PhotonNetwork.LoadLevel(1); 
+            UnityEngine.Debug.LogWarning("«¿√–”« ¿");
         }
         public override void FindQuickGame()
         {
             LoadBalancingClient.OpJoinRandomRoom();
         }
 
+        public void Dispose()
+        {
+            LoadBalancingClient.RemoveCallbackTarget(this);
+            
+        }
     }
 }

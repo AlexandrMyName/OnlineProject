@@ -1,12 +1,15 @@
 ﻿using Photon.Pun;
+using PlayFab.EconomyModels;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class FirstPersonMovement : MonoBehaviourPun, IPunObservable
+public class FirstPersonMovement : MonoBehaviourPunCallbacks, IPunObservable
 {
 
     public float speed = 5;
     [SerializeField] private Camera m_Camera;
+    [SerializeField] private List<GameObject> _hidenObjects;
     [Header("Running")]
     public bool canRun = true;
     public bool IsRunning { get; private set; }
@@ -21,9 +24,10 @@ public class FirstPersonMovement : MonoBehaviourPun, IPunObservable
     public List<System.Func<float>> speedOverrides = new List<System.Func<float>>();
 
 
-    [SerializeField, Tooltip("Prevents jumping when the transform is in mid-air.")]
+    [SerializeField]
     GroundCheck groundCheck;
 
+    GameObject instance;
 
     void Reset()
     {
@@ -31,19 +35,44 @@ public class FirstPersonMovement : MonoBehaviourPun, IPunObservable
         groundCheck = GetComponentInChildren<GroundCheck>();
     }
 
+    public override void OnEnable()
+    {
+        base.OnEnable();
+    }
+  
+    public override void OnDisable()
+    {
+        // Always call the base to remove callbacks
+        base.OnDisable();
+
+ 
+    }
+
+
+    public void Awake()
+    {
+         
+        if (photonView.IsMine)
+        {
+            instance = gameObject;
+        }
+        DontDestroyOnLoad(gameObject);
+    }
 
     void Start()
     {
-
-        if (!this.photonView.IsMine)
+      
+        if (!photonView.IsMine)
         {
+
             m_Camera.gameObject.SetActive(false);
-
+            _hidenObjects.ForEach(obj => obj.SetActive(false));
+            m_Camera.GetComponent<AudioListener>().enabled = false;
             return;
-
         }
-        rigidbody = GetComponent<Rigidbody>();
+        else rigidbody = GetComponent<Rigidbody>();
     }
+ 
 
     void FixedUpdate()
     {
@@ -78,8 +107,18 @@ public class FirstPersonMovement : MonoBehaviourPun, IPunObservable
         }
     }
 
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        
+
+        if (stream.IsWriting)
+        {
+
+        }
+        else
+        {
+
+        }
+        return;
     }
 }

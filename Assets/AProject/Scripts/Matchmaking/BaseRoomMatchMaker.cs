@@ -16,7 +16,7 @@ namespace Core.MatchMaking
         public abstract void FindQuickGame();
 
 
-        protected abstract void CreateRoom(string name, byte maxPlayersInRoom = 4);
+        protected abstract void CreateOrJoin(string name, byte maxPlayersInRoom = 4);
           
 
         public virtual void OnCreatedRoom()

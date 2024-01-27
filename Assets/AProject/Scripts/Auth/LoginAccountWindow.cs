@@ -12,6 +12,9 @@ using UnityEngine.UI;
 using TMPro;
 using System.Text;
 using Cryptograph.Xml;
+using Photon.Pun;
+using Core.MatchMaking;
+using TadWhat.CreateAccountView;
 
 namespace TadWhat.LoginAccountView
 {
@@ -115,6 +118,10 @@ namespace TadWhat.LoginAccountView
                     $"Добро пожаловать <color=yellow>{_userName}</color>";
                     _loadingObject.SetActive(false);
 
+                    BaseRoomMatchMaker.LoadBalancingClient = PhotonNetwork.NetworkingClient;
+ 
+                    PhotonNetwork.NickName = request.Username;
+                    PhotonNetwork.AutomaticallySyncScene = true;
                   
                         PlayerPrefs.SetString("tw_autoLogin", "true");
                 },
@@ -132,6 +139,19 @@ namespace TadWhat.LoginAccountView
 
             var salt = "";
             var shaID = "";
+
+            if (!CreateAccountWindow.USE_ENCRYPT)
+            {
+
+                return new PlayFab.ClientModels.LoginWithPlayFabRequest()
+                {
+
+                    Password =  _password,
+                    Username = _userName,
+                };
+
+            }
+
 
             if (PlayerPrefs.HasKey("salt_KEY"))
             {
@@ -189,6 +209,8 @@ namespace TadWhat.LoginAccountView
                 Username = _userName,
             };
         }
+
+
         private void OnDestroy()
         {
             _back_button.onClick.RemoveAllListeners();

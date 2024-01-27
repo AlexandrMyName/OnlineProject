@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TadWhat;
 using TadWhat.LoginAccountView;
+using TadWhat.CreateAccountView;
 
 namespace TadWhat.EnterView
 {
@@ -25,8 +26,11 @@ namespace TadWhat.EnterView
 
             if (PlayerPrefs.HasKey("tw_autoLogin"))
             {
-                _logInView.GetComponent<LoginAccountWindow>().LogIN(true); // Auto try
-                _createAccBut.interactable = false;
+                if (CreateAccountWindow.USE_ENCRYPT)
+                {
+                    _logInView.GetComponent<LoginAccountWindow>().LogIN(true); // Auto try
+                    _createAccBut.interactable = false;
+                }
             }
 
 

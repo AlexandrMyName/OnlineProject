@@ -3,7 +3,6 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.XR;
 using UnityEngine;
 
 
@@ -17,16 +16,20 @@ namespace Core.MatchMaking
         private LoadBalancingClient _loadBalancingClient;
         public Dictionary<string, RoomInfo> _cachedRoomList = new Dictionary<string,RoomInfo>();
         private GameRoomWithProperties _gameRoomWithProperties;
+        GameObject _playerFab;
 
-
-        public void ConnectAndJoinLobby(ServerSettings serverSettings)
+        public void ConnectAndJoinLobby(ServerSettings serverSettings, GameObject playerFab)
         {
             PhotonNetwork.AutomaticallySyncScene = true;
-            _loadBalancingClient = new();
-            _loadBalancingClient.AddCallbackTarget(this);
+            _playerFab = playerFab;
+             
+            _loadBalancingClient = PhotonNetwork.NetworkingClient;
 
-            _loadBalancingClient.ConnectUsingSettings(serverSettings.AppSettings);
-            
+            _loadBalancingClient.AddCallbackTarget(this);
+            serverSettings.DevRegion = "ru";
+            serverSettings.AppSettings.FixedRegion = "ru";
+              _loadBalancingClient.ConnectUsingSettings(serverSettings.AppSettings);
+             
         }
 
 
@@ -67,7 +70,9 @@ namespace Core.MatchMaking
 
            
             Debug.Log($"<color=green>[OnConnectedToMaster]</color> ");
-            _loadBalancingClient.OpJoinLobby(_customLobby);
+
+          
+           _loadBalancingClient.OpJoinLobby(_customLobby);
             
         }
 
@@ -96,8 +101,8 @@ namespace Core.MatchMaking
         {
             Debug.Log($"<color=green>[ вход в главное лобби]</color> ");
              
-            _gameRoomWithProperties = new(_loadBalancingClient);
-            _gameRoomWithProperties.CreateNewRoom("RoomLobby", 4);
+            _gameRoomWithProperties = new(_playerFab,_loadBalancingClient);
+            _gameRoomWithProperties.CreateOrJoinRoom("RoomLobby", 4);
 
         }
 
@@ -130,6 +135,7 @@ namespace Core.MatchMaking
         public void Dispose()
         {
             _loadBalancingClient.RemoveCallbackTarget(this);
+            _gameRoomWithProperties?.Dispose();
         }
     }
 }

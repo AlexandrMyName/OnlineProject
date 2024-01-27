@@ -17377,6 +17377,7 @@ MonoBehaviour:
   _roomListView: {fileID: 2027598923}
   _serverSettings: {fileID: 11400000, guid: e57938ba9fea5ef40892cb92cf865b95, type: 2}
   _hidenObjects: []
+  _playerFab: {fileID: 625370486608762530, guid: cec57685be0028c4e9bf6142d3e22529, type: 3}
 --- !u!1 &2124174167
 GameObject:
   m_ObjectHideFlags: 0

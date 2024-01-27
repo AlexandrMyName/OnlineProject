@@ -16,7 +16,7 @@ namespace Core.MatchMaking
         public override void FindQuickGame() => _loadBalancingClient.OpJoinRandomOrCreateRoom(null,null);
          
 
-        protected override void CreateRoom(string name, byte maxPlayersInRoom  = 4)
+        protected override void CreateOrJoin(string name, byte maxPlayersInRoom  = 4)
         {
 
             RoomOptions roomOptions = new RoomOptions();

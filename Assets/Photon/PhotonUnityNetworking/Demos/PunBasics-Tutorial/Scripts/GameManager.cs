@@ -48,9 +48,10 @@ namespace Photon.Pun.Demo.PunBasics
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
         /// </summary>
         void Start()
-		{
+		{  
 			Instance = this;
-
+			 
+			 
 			// in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
 			{

@@ -14,13 +14,10 @@ namespace Core.MatchMaking
         [SerializeField] private RoomListView _roomListView;
         [SerializeField] private ServerSettings _serverSettings;
         [SerializeField] private List<GameObject> _hidenObjects;
+        [SerializeField] private GameObject _playerFab;
 
         private RoomListCaching _roomList;
-
-
-
-
-
+         
         private void Awake()
         {
             
@@ -38,13 +35,18 @@ namespace Core.MatchMaking
         {
 
             _roomList = new RoomListCaching();
-            _roomList.ConnectAndJoinLobby(_serverSettings);
+            _roomList.ConnectAndJoinLobby(_serverSettings, _playerFab);
             _roomListView.gameObject.SetActive(true);
             _roomListView.Init(_roomList);
         }
 
 
-        private void OnDestroy() =>  _joinLobbyButton.onClick.RemoveAllListeners();
+        private void OnDestroy()
+        {
+
+            _joinLobbyButton.onClick.RemoveAllListeners();
+            _roomList.Dispose();
+        }
         
     }
 }
