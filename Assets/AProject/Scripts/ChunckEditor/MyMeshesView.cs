@@ -19,16 +19,23 @@ namespace TadWhat.ACraft.ChunckEditor
 
         [SerializeField] private Transform _content;
 
-        [SerializeField] private Button _load, _back;
+        [SerializeField] private Button _load, _back, _unblockRemoving;
 
         [SerializeField] private TMP_InputField _newNameFile;
 
-       
+        [SerializeField] private TMP_Text _errorText;
+
+        [SerializeField] private AdminView _adminView;
+
+        [SerializeField] private List<GameObject> _hidenOnLoad;
+        [SerializeField] private List<GameObject> _shownOnLoad;
+
+
         public void InitView(FreeFlyCamera flyCam, EditChunckAndCreation chunckEditor)
         {
 
             string path = Application.dataPath.Replace("/Assets", "/Meshes");
-          
+
 
             DirectoryInfo dir = new DirectoryInfo(path);
             FileInfo[] info = dir.GetFiles("*.*");
@@ -36,7 +43,7 @@ namespace TadWhat.ACraft.ChunckEditor
             foreach (FileInfo f in info)
             {
 
-                if (f.Name[f.Name.Length-1] ==  'a') continue;
+                if (f.Name[f.Name.Length - 1] == 'a') continue;
 
                 Debug.Log($"Найден объект: <color=green>{f.Name}</color>");
 
@@ -47,8 +54,20 @@ namespace TadWhat.ACraft.ChunckEditor
                 meshView.Init(f.Name);
             }
 
-            _back.onClick.AddListener(() => this.gameObject.SetActive(false));
+            if (info.Length == 0) _errorText.text = $" <color=red> похоже созданных файлов нет</color>";
+            else
+            {
+                _errorText.text = string.Empty;
+            }
 
+
+            _back.onClick.AddListener(() =>
+            {
+                this.gameObject.SetActive(false);
+                _adminView.gameObject.SetActive(true);
+            });
+
+ 
             _load.onClick.AddListener(() =>
             {
 
@@ -77,8 +96,10 @@ namespace TadWhat.ACraft.ChunckEditor
 
                 if(request.Chuncks.Count > 0)
                 {
-                   
-                   StartCoroutine(LoadChuncks(flyCam, chunckEditor,request));
+                    _hidenOnLoad.ForEach(obj => obj.SetActive(false));
+                    _shownOnLoad.ForEach(obj => obj.SetActive(true));
+
+                    StartCoroutine(LoadChuncks(flyCam, chunckEditor,request));
                 }
             });
 
@@ -94,7 +115,13 @@ namespace TadWhat.ACraft.ChunckEditor
                     AdminView.Height = 30;
             });
 
-
+            _unblockRemoving.onClick.AddListener(() =>
+            {
+                foreach(var view in _meshes)
+                {
+                    view.UnblockRemove();
+                }
+            });
         }
 
 
@@ -115,6 +142,7 @@ namespace TadWhat.ACraft.ChunckEditor
             _back.onClick.RemoveAllListeners();
             _load.onClick.RemoveAllListeners();
             _newNameFile.onValueChanged.RemoveAllListeners();
+            _unblockRemoving.onClick.RemoveAllListeners();
         }
     }
 }

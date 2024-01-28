@@ -25,6 +25,8 @@ namespace TadWhat.Auth
 
         [SerializeField] private MyMeshesView _meshesView;
 
+        [SerializeField] private GameWindow _gameWindow;
+
 
         public static string NewChunckFileName;
         public static int Width;
@@ -41,11 +43,7 @@ namespace TadWhat.Auth
                 $" программа позволяющая создать текстовый меш и " +
                 $"сохранить в файл с последующим использованием <color=green> введите высоту и ширину чанка  </color> \n " +
                 $"рекомендуемые значения - 128 * 30, перегенирировать меш <color=red> нельзя </color> ";
-            _textInformation2.text = $"Поставить блок - <color=red> правая кн.мыши </color>  \n" +
-                                     $"Удалить блок - <color=red> левая кн.мыши </color>  \n" +
-                                     $"Переключить блок - <color=red> кнопка P (окно) </color>  \n" +
-                                     $"Сохранить проект - <color=red> LEFT ALT </color>  \n";
-
+  
             _createNew.interactable = false;
 
             _fileName.onValueChanged.AddListener(value =>
@@ -103,6 +101,12 @@ namespace TadWhat.Auth
                 _heightChunck.gameObject.SetActive(false);
                  
                 StartCoroutine(CreateNewChunckEditor());
+            });
+
+            _back.onClick.AddListener(() =>
+            {
+                this.gameObject.SetActive(false);
+                _gameWindow.gameObject.SetActive(true);
             });
         }
 

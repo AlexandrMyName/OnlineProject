@@ -57,8 +57,7 @@ public class GameWindow : MonoBehaviour
         {
             _adminAPI_button.interactable = true;
 
-            _adminInformation.text = $"<color=green>вам доступны</color> <color=red> права администратора </color> \n" +
-                $"подробнее (кнопка Админ API)";
+            _adminInformation.text = $"";
 
             _adminAPI_button.onClick.AddListener(() =>
             {
@@ -71,7 +70,7 @@ public class GameWindow : MonoBehaviour
         else
         {
             _adminAPI_button.interactable = false;
-            _adminInformation.text = $"<color=green>права администратора не доступны</color> <color=yellow> TAD WHAT </color>";
+            _adminInformation.text = $"<color=red>права администратора не доступны</color>";
         }
     }
 

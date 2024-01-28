@@ -45,7 +45,7 @@ namespace Core.MatchMaking
         {
 
             _joinLobbyButton.onClick.RemoveAllListeners();
-            _roomList.Dispose();
+            _roomList?.Dispose();
         }
         
     }

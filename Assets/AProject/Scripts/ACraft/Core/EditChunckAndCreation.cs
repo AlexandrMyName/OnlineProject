@@ -22,7 +22,11 @@ namespace TadWhat.ACraft.Constructor
         [SerializeField] private TextureDataConfig _textureConfig;
         [SerializeField] private IconsConfigs _iconsItemConfigs;
         [SerializeField] private Transform _playerRoot;
+
+        [Space,Header("Инвентарь")]
         [SerializeField] private InventoryBarView _inventoryBarView;
+        [SerializeField] private Inventory _inventoryPresenter;
+
 
         private WorldChunckObjects _wco;
         private Generator _gen;
@@ -40,9 +44,40 @@ namespace TadWhat.ACraft.Constructor
             _inventoryBar = new InventoryBar();
 
             _gen.WorldSetUp(_wco, false, 0,_loadObj, _saveObj);
-             
-           
-           
+
+            _inventoryPresenter.Init(_inventoryBar);
+            _inventoryPresenter.InitCreativeInventory(new[]
+            {
+                BlockType.Grass,
+                BlockType.Wood_Gray,
+                BlockType.Wood,
+                BlockType.White_Wool,
+                BlockType.Bedrock,
+                BlockType.Snow,
+                BlockType.Boards,
+                BlockType.WoodenLightBoards ,
+                BlockType.Boards_Dark,
+                BlockType.Modern_Boards,
+                BlockType.Modern_Boards_Dark,
+                BlockType.Modern_Boards_Light,
+                BlockType.Modern_Boards_Light,
+                BlockType.Stone,
+                BlockType.Modern_Stone,
+                BlockType.Modern_StoneTree,
+                BlockType.CraftBlock,
+                BlockType.TNT,
+
+                  BlockType.WoodenDoorDOWN,
+                BlockType.Red_Brick,
+                BlockType.Bedrock,
+                BlockType.Black_Wool,
+                BlockType.BlueLight_Wool,
+                BlockType.Blue_Wool,
+                BlockType.Brown_Wool,
+                BlockType.GreenLight_Wool,
+                BlockType.Green_Wool,
+            
+            });
              
         }
 
@@ -103,18 +138,27 @@ namespace TadWhat.ACraft.Constructor
 
         public void LoadChuncks(LoadChuncksRequest request)
         {
-             
-            foreach(var chunckRef in request.Chuncks)
+
+            if (request.Chuncks.Count == 1)
             {
-                
-                   // if (chunckRef.MeshView == null) continue;
+               
+                XmlMesh xml = LoadMeshFromXML(request.Chuncks[0].FileName);
+
+                _gen.GenerateExistXmlMesh(Vector3Int.one, xml);
+            }
+            else
+            {
+                foreach (var chunckRef in request.Chuncks)
+                {
+
+                    // if (chunckRef.MeshView == null) continue;
 
                     XmlMesh xml = LoadMeshFromXML(chunckRef.FileName);
-               
-                    _gen.GenerateExistXmlMesh(Vector3Int.FloorToInt(chunckRef.WorldPosition), xml);
- 
-            }
 
+                    _gen.GenerateExistXmlMesh(Vector3Int.FloorToInt(chunckRef.WorldPosition), xml);
+
+                }
+            }
             _inventoryBar.LoadDataBar(LoadInventoryBar(), _inventoryBarView, _iconsItemConfigs);
             _inventoryBarView.gameObject.SetActive(true);
             _craft = new CraftEditMode(_wco, _matChunck, _playerRoot);
@@ -128,6 +172,7 @@ namespace TadWhat.ACraft.Constructor
 
             if (!_isInitEditor) return;
 
+            _inventoryPresenter.RunInventory();
             _inventoryBar.RunInventoryButtons();
             _gen.RunEditGeneration();
             _craft.RunCraftingBlocks();

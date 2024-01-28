@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -73,6 +75,17 @@ namespace Core.Generation
 
         public void SaveMeshToXML()
         {
+
+            Debug.Log($"<color=green> Высота чанка:</color> {AdminView.Height}");
+            Debug.Log($"<color=green> Ширина чанка:</color> {AdminView.Width}");
+
+
+            if (string.IsNullOrEmpty(AdminView.NewChunckFileName))
+            {
+                DateTime date = DateTime.UtcNow; 
+                AdminView.NewChunckFileName = $"Безымянный_{date.Date.Hour}_{date.Date.Minute}_{date.Date.Second}_{date.Date.Day}_{date.Date.Month}.xml";
+            }
+
             try
             {
                 IsSaveProccess = true;
@@ -167,11 +180,14 @@ namespace Core.Generation
 
         public MeshData GenerateEdit(ChunckData chunckData, Vector3Int worldBounds)
         {
+
+            MeshData meshData = new();
+
             _data = chunckData;
             _bounds = worldBounds;
+
             Generate(Vector3.zero, _bounds);
-            Debug.LogWarning("ПРОХОД");
-            MeshData meshData = new();
+           
             meshData.ChunckPosition = chunckData.ChunckPosition;
             meshData.SetTriangleBufferData(_triangles);
             meshData.SetVertexBufferData(_verticals);
@@ -182,12 +198,14 @@ namespace Core.Generation
             meshData.WaterVerticals = _waterVerticals;
             meshData.WaterUvs = _textureRender.GetWaterUVs();
             _isGenerated = true;
+
             return meshData;
         }
 
 
         public MeshData SetBlock(Vector3 normal )
         {
+
             if (_data == null) return null;
 
             if(_bounds != Vector3Int.zero)
@@ -396,7 +414,7 @@ namespace Core.Generation
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
 
                     // Up
-                    Debug.Log(blockPos + " DOWN");
+                   
                     blockPos += Vector3Int.up;
                     type = BlockType.WoodenDoorUP;
                     
@@ -430,7 +448,7 @@ namespace Core.Generation
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.WoodenStaircase) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
-                    Debug.Log(blockPos + " UP");
+                    
                 }
             }
 

@@ -134,7 +134,7 @@ namespace Core.MatchMaking
 
         public void Dispose()
         {
-            _loadBalancingClient.RemoveCallbackTarget(this);
+            _loadBalancingClient?.RemoveCallbackTarget(this);
             _gameRoomWithProperties?.Dispose();
         }
     }

@@ -182,7 +182,7 @@ namespace Core.Generation
                 generationObject.transform.SetParent(_worldParrent, false);
               
                 generationObject.transform.position = meshData.WorldPositionStay;
-                Debug.LogWarning(meshData.WorldPositionStay);
+               
                 Mesh mesh = new Mesh();
                 MeshFilter filter = generationObject.AddComponent<MeshFilter>();
                 MeshRenderer render = generationObject.AddComponent<MeshRenderer>();
@@ -274,10 +274,14 @@ namespace Core.Generation
             try
             {
                 if (_loadObj != null) _loadObj.SetActive(true);
- 
+
+
                 Task.Factory.StartNew(() =>
-                {
-                
+                 {
+
+                    if (xml.ChunckHeight == 0) xml.ChunckHeight = 30;
+
+
                     if(globalWorldPosition == null)
                     {
                         globalWorldPosition = Vector3Int.zero;
@@ -290,15 +294,16 @@ namespace Core.Generation
                     
                     BlockType[,,] blocks = new BlockType[xml.ChunckWidth, xml.ChunckHeight, xml.ChunckWidth]; ;
 
-
+              
                     foreach (var block in xml.Blocks)
                     {
+                    
                         blocks[block.X_blockKey, block.Y_blockKey, block.Z_blockKey] = (BlockType)block.Value;
                     }
-
+                 
                     float xOffset = globalWorldPosition.x * WorldGeneration.Width * WorldGeneration.Scale;
                     float zOffset = globalWorldPosition.y * WorldGeneration.Width * WorldGeneration.Scale;
-
+                    
                     ChunckData data = new ChunckData(blocks, new Vector3(xOffset, 0, zOffset));
 
                     _worldObjects.ChunckData.Add(worldPosition, data);
@@ -308,12 +313,12 @@ namespace Core.Generation
                     data.Render = new ChunckRenderer(_textureConfig, 14);
 
                     data.Render.SetExistData(xml, data);
-                    InstantiateStreamForExistRender(data, new Vector3Int(xml.ChunckWidth, xml.ChunckHeight, xml.ChunckWidth));  
-                });
+                    InstantiateStreamForExistRender(data, new Vector3Int(xml.ChunckWidth, xml.ChunckHeight, xml.ChunckWidth));
+                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Debug.LogWarning(ex.Message);
+                Debug.LogWarning($"<color=red>{ex.Message}</color>");
             }
 
         }
@@ -371,7 +376,7 @@ namespace Core.Generation
 
         private void InstantiateStreamForExistRender(ChunckData data, Vector3Int bounds)
         {
-
+            
             Task.Factory.StartNew(() =>
             {
               
@@ -379,7 +384,10 @@ namespace Core.Generation
                  
                 meshData = MeshBuilder.GenerateMeshDataWithEditMode(data.Render, data, bounds);
                 
-                 
+                 if(meshData == null)
+                 {
+                    Debug.Log("<color=red>Критическая ошибка регенерации меша</color>");
+                 }
                 _meshDataQueue.Enqueue(meshData);
             });
         }

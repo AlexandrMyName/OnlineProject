@@ -21,10 +21,15 @@ public class MeshView : MonoBehaviour
 
     [HideInInspector] public string FullPathToFile;
 
+     
     public string Name;
 
     public Vector3 WorldPosition;
     
+
+    public void UnblockRemove() => _removeMesh.interactable = true;
+    
+
 
     public void Init(string fileName)
     {
@@ -34,7 +39,7 @@ public class MeshView : MonoBehaviour
         _fileName.text = $"Τΰιλ: <color=green>{fileName}</color>";
         _toggleAddToCollection.onValueChanged.AddListener(value =>
         {
-            Debug.Log(value);
+            
             CanAddToCollection = value;
         });
 
