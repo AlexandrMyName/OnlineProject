@@ -1,6 +1,8 @@
 using Cryptograph;
 using Cryptograph.Xml;
 using PlayFab;
+using PlayFab.EconomyModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -75,11 +77,17 @@ namespace TadWhat.CreateAccountView
 
                 _loadingObject.SetActive(true);
 
+                if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
+                {
+                    PlayFabSettings.staticSettings.TitleId = " A823B";
+                }
+
                 PlayFabClientAPI.RegisterPlayFabUser(new PlayFab.ClientModels.RegisterPlayFabUserRequest()
                 {
                     Email = _email,
                     Password = user.SaltedHashedPassword,
                     Username = user.Name,
+                    DisplayName = _userName,  
                       
                 }, res =>
                 {
@@ -116,7 +124,45 @@ namespace TadWhat.CreateAccountView
                         PlayerPrefs.SetString("tw_password", _password);
                         PlayerPrefs.SetString("tw_userName", _userName);
                         PlayerPrefs.SetString("tw_autoLogin", "true");
+                        PlayerPrefs.SetString("PlayFabID",  res.PlayFabId);//To xml
                     }
+
+                    PlayFabServerAPI.GrantItemsToUser(new PlayFab.ServerModels.GrantItemsToUserRequest() {
+                          Annotation = "" ,
+                          ItemIds = new List<string> { "Character_token" } ,
+                          PlayFabId = res.PlayFabId,
+                          CustomTags = new Dictionary<string, string> { { "character", " token" } }
+                    }, resToken =>
+                    {
+                        
+                        Debug.Log($"<color=green>ВЫДАН ТОКЕН СОЗДАНИЯ ПЕРСОНАЖА</color>");
+
+                        Debug.Log($"<color=yellow>Создание персонажа</color>");
+
+                            PlayFabServerAPI.GrantCharacterToUser(new PlayFab.ServerModels.GrantCharacterToUserRequest()
+                            {
+                                CharacterName = "Steve(default)",
+                                PlayFabId = res.PlayFabId,
+                                CustomTags = new Dictionary<string, string>()
+                                {
+                                    {"Level","0"},
+                                    {"Exp","0"},
+                                    {"MaxHealth","100"},
+                                }
+                            }, resultToCreateCharacter =>
+                            {
+                                Debug.Log($"<color=green>Персонаж успешно создан! Имя скина: <color=red>{resultToCreateCharacter.CharacterId}</color>");
+                                
+                                
+                            }, errToCreateCharacter =>
+                            {  
+                                Debug.Log($"<color=red>ошибка создания персонажа {errToCreateCharacter.GenerateErrorReport()}</color>");
+                            });
+
+                    }, errToken =>
+                    {
+                        Debug.Log($"<color=red>ошибка выдачи токена создания персонажа {errToken.GenerateErrorReport()}</color>");
+                    });
 
                 }, err =>
                 {

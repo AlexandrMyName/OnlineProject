@@ -110,13 +110,13 @@ namespace TadWhat.Shop
 
                         button.onClick.AddListener(() =>
                         {
-                            if (_myCurrencySC >= item.VirtualCurrencyPrices["SC"])
+                            if (UpdateCurrentCurrencyInventory() >= item.VirtualCurrencyPrices["SC"])
                             {
                                 _myCurrencySC -= (int)item.VirtualCurrencyPrices["SC"];
                                 UpdateCurrentCurrencyInventory((int)item.VirtualCurrencyPrices["SC"]);
                                 goldInMemory = PlayerPrefs.GetInt("twGold");
                                 goldInMemory += itemStack.Value;
-                                PlayerPrefs.SetInt("twGold", goldInMemory);
+                                PlayerPrefs.SetInt("twGold", goldInMemory);  
                                 _goldText.text = $"Золото: <color=green>{goldInMemory}</color>";
 
                             }
@@ -223,8 +223,12 @@ namespace TadWhat.Shop
             return itemObject;
         }
 
-        private void UpdateCurrentCurrencyInventory(int minus = 0)
+        private int UpdateCurrentCurrencyInventory(int minus = 0)
         {
+            var currency = 0;
+
+
+            
             PlayFabClientAPI.GetUserInventory(new PlayFab.ClientModels.GetUserInventoryRequest(), res =>
             {
                 if(minus > 0)
@@ -246,12 +250,13 @@ namespace TadWhat.Shop
                 _myCurrencySC = res.VirtualCurrency["SC"];
                 _scText.text = $"My soft currency : <color=green>{res.VirtualCurrency["SC"]}</color>";
 
-
+                currency = res.VirtualCurrency["SC"];
             }, err =>
             {
                 Debug.LogError("Получение игровой валюты - сбой!");
+                 
             });
-
+            return currency;
             
         }
 
