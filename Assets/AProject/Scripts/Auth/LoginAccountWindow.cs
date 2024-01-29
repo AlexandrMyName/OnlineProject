@@ -15,6 +15,7 @@ using Cryptograph.Xml;
 using Photon.Pun;
 using Core.MatchMaking;
 using TadWhat.CreateAccountView;
+using TadWhat.Auth;
 
 namespace TadWhat.LoginAccountView
 {
@@ -123,7 +124,49 @@ namespace TadWhat.LoginAccountView
                     PhotonNetwork.NickName = request.Username;
                     PhotonNetwork.AutomaticallySyncScene = true;
                   
-                        PlayerPrefs.SetString("tw_autoLogin", "true");
+                    PlayerPrefs.SetString("tw_autoLogin", "true");
+
+                    PlayFabServerAPI.GetAllUsersCharacters(new PlayFab.ServerModels.ListUsersCharactersRequest()
+                    {
+                        PlayFabId = res.PlayFabId
+                    },resultGetCharacters =>
+                    {
+                        switch (resultGetCharacters.Characters[resultGetCharacters.Characters.Count - 1].CharacterType)
+                        {
+                            case "default":
+                                {
+                                    CharacterData.SetCharacter(CharacterType.Steve);
+                                    Debug.LogWarning($"<color=green> Получена информация о последнем персонаже</color> <color=blue>STEVE Default</color>");
+                                    break;
+                                }
+                            case "donat":
+                                {
+                                    CharacterData.SetCharacter(CharacterType.Steve);
+                                    break;
+                                }
+                            case "vip":
+                                {
+                                    CharacterData.SetCharacter(CharacterType.Steve);
+                                    break;
+                                }
+                            case "vip+":
+                                {
+                                    CharacterData.SetCharacter(CharacterType.Steve);
+                                    break;
+                                }
+                            case "admin":
+                                {
+                                    CharacterData.SetCharacter(CharacterType.Steve);
+                                    break;
+                                }
+                        }
+                    },
+                    errorGetCharacters =>
+                    {
+                        Debug.LogError("Не удалось загрузить данные персонажа: " + errorGetCharacters.GenerateErrorReport());
+                    });
+                   // CharacterData.SetCharacter()
+
                 },
                 err =>
                 {

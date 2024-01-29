@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Xml.Serialization;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -143,6 +144,7 @@ namespace TadWhat.CreateAccountView
                             {
                                 CharacterName = "Steve(default)",
                                 PlayFabId = res.PlayFabId,
+                                CharacterType = "default",
                                 CustomTags = new Dictionary<string, string>()
                                 {
                                     {"Level","0"},
@@ -151,8 +153,8 @@ namespace TadWhat.CreateAccountView
                                 }
                             }, resultToCreateCharacter =>
                             {
-                                Debug.Log($"<color=green>Персонаж успешно создан! Имя скина: <color=red>{resultToCreateCharacter.CharacterId}</color>");
-                                
+                                Debug.Log($"<color=green>Персонаж успешно создан!</color> Имя скина: <color=red>Steve</color>");
+                                SceneManager.LoadScene(0);
                                 
                             }, errToCreateCharacter =>
                             {  

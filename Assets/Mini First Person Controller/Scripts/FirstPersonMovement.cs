@@ -20,7 +20,9 @@ public class FirstPersonMovement : MonoBehaviourPunCallbacks, IPunObservable
     public event System.Action Jumped;
     private GroundCheck _groundCheck;
 
- 
+
+    [SerializeField] private Canvas _canvasHealth;
+
     public List<System.Func<float>> speedOverrides = new List<System.Func<float>>();
 
 
@@ -29,10 +31,37 @@ public class FirstPersonMovement : MonoBehaviourPunCallbacks, IPunObservable
 
     GameObject instance;
 
+    private int _health;
+    [SerializeField] private TMP_Text _healthText;
+
+
+
     void Reset()
     {
 
         groundCheck = GetComponentInChildren<GroundCheck>();
+    }
+
+
+    public void UpdatePlayersCameraUI()
+    {
+
+        var players = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (var player in players)
+        {
+            if (player == this.gameObject) continue;
+
+            player.GetComponent<FirstPersonMovement>().SetWorldCameraUI(m_Camera);
+        }
+    }
+
+
+    public void SetWorldCameraUI(Camera camera)
+    {
+       
+            _canvasHealth.worldCamera = camera;
+        
     }
 
     public override void OnEnable()
@@ -54,6 +83,8 @@ public class FirstPersonMovement : MonoBehaviourPunCallbacks, IPunObservable
          
         if (photonView.IsMine)
         {
+            _health = 100;//?
+            _healthText.text = _health.ToString();
             instance = gameObject;
         }
         DontDestroyOnLoad(gameObject);
@@ -113,11 +144,13 @@ public class FirstPersonMovement : MonoBehaviourPunCallbacks, IPunObservable
 
         if (stream.IsWriting)
         {
-
+            stream.SendNext(_health);
+            _healthText.text = $" <color=green>{_health}</color>";
         }
         else
         {
-
+           _health = (int) stream.ReceiveNext();
+            _healthText.text = $" <color=green>{_health}</color>";
         }
         return;
     }
