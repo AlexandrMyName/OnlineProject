@@ -11,13 +11,18 @@ public class InventoryBar
     private InventoryBarView _view;
     private IconsConfigs _model;
     public int DefaultItem;
+    private IconsConfigs _iconConfigs;
+
 
     public void LoadDataBar(List<BlockType> blocks, [NotNull] InventoryBarView view,[NotNull] IconsConfigs model)
     {
+
         _view = view;
         _model = model;
 
         int itemNumber;
+        _iconConfigs = model;
+
 
         for(itemNumber = 1; itemNumber <= 9; itemNumber++)
         {
@@ -32,6 +37,7 @@ public class InventoryBar
     {
         BlocksInBar[DefaultItem] = block;
         CurrentBlock.CurrentCraftingBlock = BlocksInBar[DefaultItem];
+        _view.InitItem(DefaultItem, _iconConfigs.Configs.Find(item => item.Type == block));
     }
     
     public void RunInventoryButtons()
@@ -88,9 +94,9 @@ public class InventoryBar
 
         else if (Input.GetKeyDown(KeyCode.Alpha9))
         {
-            CurrentBlock.CurrentCraftingBlock = BlocksInBar[9];
-            DefaultItem = 9;
-            _view.SetDefaultItem(9);
+          //  CurrentBlock.CurrentCraftingBlock = BlocksInBar[9];
+           // DefaultItem = 9;
+           // _view.SetDefaultItem(9);
         }
 
     }

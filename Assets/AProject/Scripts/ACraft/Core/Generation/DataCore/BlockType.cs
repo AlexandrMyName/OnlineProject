@@ -64,6 +64,10 @@ namespace Core.Models
         Wood = 55,
         Wood_Dark = 56,
         Wood_Gray = 57,
-        
+
+        Player_DiamondItem = 58,
+        Player_GoldItem = 59,
+        Player_EmeraldItem = 60,
+        Player_TritonItem = 61,
     }
 }

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f31ed5e64805f2d4db098231d87a4d8c, type: 3}
+  m_Name: PlayerIconsConfigs
+  m_EditorClassIdentifier: 
+  <Configs>k__BackingField:
+  - Icon: {fileID: 21300000, guid: ebedc66ced62b7d47974e7ca5c6e5521, type: 3}
+    Type: 58
+  - Icon: {fileID: 21300000, guid: 25b24af753189f644bf3da54942e35c0, type: 3}
+    Type: 59
+  - Icon: {fileID: 21300000, guid: ee63700585412bc47a33cc7a36fbfdac, type: 3}
+    Type: 60
+  - Icon: {fileID: 21300000, guid: af77273b34edb4bacbace0efd118bf1a, type: 3}
+    Type: 61
