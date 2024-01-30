@@ -108,9 +108,16 @@ namespace TadWhat.Shop
 
                         ItemInShop itemStack = GetItem(item, objectInstance, button,_playerIconsConfig, textName);
 
+                        if (itemStack.OnItemClicked == null)
+                        {
+                            Destroy(objectInstance);
+                            continue;
+                        }
+                        Debug.Log("Get User Inventory");
+
                         button.onClick.AddListener(() =>
                         {
-                            if (UpdateCurrentCurrencyInventory() >= item.VirtualCurrencyPrices["SC"])
+                            if (_myCurrencySC >= item.VirtualCurrencyPrices["SC"])
                             {
                                 _myCurrencySC -= (int)item.VirtualCurrencyPrices["SC"];
                                 UpdateCurrentCurrencyInventory((int)item.VirtualCurrencyPrices["SC"]);
@@ -212,7 +219,7 @@ namespace TadWhat.Shop
                     {
                         itemObject = new ItemInShop()
                         {
-                            OnItemClicked = button,
+                            OnItemClicked = null,
                             Price = 10000,
                             Value = 0,
                             Instance = objectInstance
