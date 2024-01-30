@@ -1,5 +1,7 @@
+using Cryptograph;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TadWhat.ACraft.ChunckEditor;
 using TadWhat.ACraft.Constructor;
 using TMPro;
@@ -28,7 +30,7 @@ namespace TadWhat.Auth
         [SerializeField] private GameWindow _gameWindow;
 
 
-        public static string NewChunckFileName;
+      
         public static int Width;
         public static int Height;
 
@@ -48,7 +50,9 @@ namespace TadWhat.Auth
 
             _fileName.onValueChanged.AddListener(value =>
             {
-                AdminView.NewChunckFileName = value + ".xml";
+                FileMetaData.NewChunckFileXmlName = value + ".xml";
+                FileMetaData.NewChunckFolderName = value;
+                FileMetaData.NewChunckFileJsonName = value + ".json";
             });
 
             _myMeshes.onClick.AddListener(() =>
@@ -115,7 +119,10 @@ namespace TadWhat.Auth
         {
 
             yield return new WaitForSeconds(2);
-            _chunckEditor.CreateNewChunck(_width, _height,_fileName.text);
+
+            var folder = Directory.CreateDirectory(Path.Combine(FileMetaData.Path,FileMetaData.NewChunckFolderName));
+            
+            _chunckEditor.CreateNewChunck(_width, _height, FileMetaData.NewChunckFolderName);
             _flyCam.enabled = true;
             this.gameObject.SetActive(false);
         }
@@ -134,10 +141,10 @@ namespace TadWhat.Auth
 
     public class ChunckRequest
     {
-  
+         
         public MeshView MeshView { get; set; }
         public string FileName { get; set; }
-
+        public string FolderName { get; set; }
         public Vector3  WorldPosition { get; set; }
     }
 

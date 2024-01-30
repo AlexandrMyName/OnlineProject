@@ -1,3 +1,4 @@
+using Cryptograph;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -33,95 +34,117 @@ namespace TadWhat.ACraft.ChunckEditor
 
         public void InitView(FreeFlyCamera flyCam, EditChunckAndCreation chunckEditor)
         {
-
-            string path = Application.dataPath.Replace("/Assets", "/Meshes");
-
-
-            DirectoryInfo dir = new DirectoryInfo(path);
-            FileInfo[] info = dir.GetFiles("*.*");
-
-            foreach (FileInfo f in info)
+            
+            var objectsInContent = _content.GetComponentsInChildren<MeshView>();
+            foreach(var obj in objectsInContent)
             {
-
-                if (f.Name[f.Name.Length - 1] == 'a') continue;
-
-                Debug.Log($"Найден объект: <color=green>{f.Name}</color>");
-
-                var meshViewInstance = GameObject.Instantiate(_meshViewFab, _content);
-                var meshView = meshViewInstance.GetComponent<MeshView>();
-                meshView.FullPathToFile = f.FullName;
-                _meshes.Add(meshView);
-                meshView.Init(f.Name);
+                obj.gameObject.SetActive(false);
             }
-
-            if (info.Length == 0) _errorText.text = $" <color=red> похоже созданных файлов нет</color>";
-            else
-            {
-                _errorText.text = string.Empty;
-            }
+             
+            DirectoryInfo mainDir = new DirectoryInfo(FileMetaData.Path);
 
 
-            _back.onClick.AddListener(() =>
-            {
-                this.gameObject.SetActive(false);
-                _adminView.gameObject.SetActive(true);
-            });
+            DirectoryInfo[] infoFolders = mainDir.GetDirectories();
 
- 
-            _load.onClick.AddListener(() =>
+            Debug.Log(infoFolders.Length);
+
+            foreach (var infoFolder in infoFolders)
             {
 
-                
-                LoadChuncksRequest request = new();
+                Debug.LogWarning($"Найдена папка <color=green> {infoFolder.Name}</color>");
 
-                request.Chuncks = new();
 
-                _meshes.ForEach(mesh =>
+                DirectoryInfo dir = new DirectoryInfo(Path.Combine(FileMetaData.Path, infoFolder.Name));
+
+                FileInfo[] info = dir.GetFiles("*.*");
+
+                foreach (FileInfo f in info)
                 {
 
-                    if (mesh.CanAddToCollection)
-                    {
-                        
-                        request.Chuncks.Add(new ChunckRequest()
-                        {
-                            FileName = mesh.Name,
-                            WorldPosition = mesh.WorldPosition,
-                            MeshView = mesh
-                        });
-                       
-                    }
-                    
+                    if (f.Name[f.Name.Length - 1] == 'a') continue;
+                    if (f.Name[f.Name.Length - 1] == 'n') continue;
+
+                    Debug.Log($"Найден объект: <color=green>{f.Name}</color>");
+
+                    var meshViewInstance = GameObject.Instantiate(_meshViewFab, _content);
+                    var meshView = meshViewInstance.GetComponent<MeshView>();
+                    meshView.FullPathToFile = f.FullName;
+                    _meshes.Add(meshView);
+                    meshView.Init(f.Name, infoFolder.Name);
+                }
+
+                if (info.Length == 0) _errorText.text = $" <color=red> похоже созданных файлов нет</color>";
+                else
+                {
+                    _errorText.text = string.Empty;
+                }
+
+
+                _back.onClick.AddListener(() =>
+                {
+                    this.gameObject.SetActive(false);
+                    _adminView.gameObject.SetActive(true);
                 });
-                 
 
-                if(request.Chuncks.Count > 0)
+
+                _load.onClick.AddListener(() =>
                 {
-                    _hidenOnLoad.ForEach(obj => obj.SetActive(false));
-                    _shownOnLoad.ForEach(obj => obj.SetActive(true));
-
-                    StartCoroutine(LoadChuncks(flyCam, chunckEditor,request));
-                }
-            });
 
 
-            _newNameFile.onValueChanged.AddListener(value =>
-            {
+                    LoadChuncksRequest request = new();
 
-                AdminView.NewChunckFileName = value + ".xml";
+                    request.Chuncks = new();
 
-                if(AdminView.Height == 0)
-                    AdminView.Width = 128;
-                if(AdminView.Width == 0)
-                    AdminView.Height = 30;
-            });
+                    _meshes.ForEach(mesh =>
+                    {
 
-            _unblockRemoving.onClick.AddListener(() =>
-            {
-                foreach(var view in _meshes)
+                        if (mesh.CanAddToCollection)
+                        {
+
+                            request.Chuncks.Add(new ChunckRequest()
+                            {
+                                FileName = mesh.Name,
+                                FolderName = mesh.FolderName,
+                                WorldPosition = mesh.WorldPosition,
+                                MeshView = mesh
+                            });
+
+                        }
+
+                    });
+
+
+                    if (request.Chuncks.Count > 0)
+                    {
+                        _hidenOnLoad.ForEach(obj => obj.SetActive(false));
+                        _shownOnLoad.ForEach(obj => obj.SetActive(true));
+
+                        StartCoroutine(LoadChuncks(flyCam, chunckEditor, request));
+                    }
+                });
+
+
+                _newNameFile.onValueChanged.AddListener(value =>
                 {
-                    view.UnblockRemove();
-                }
-            });
+
+                    //FileMetaData.NewChunckFileXmlName = value + ".xml";
+                   // FileMetaData.NewChunckFileJsonName = value + ".json";
+
+                    if (AdminView.Height == 0)
+                        AdminView.Width = 128;
+                    if (AdminView.Width == 0)
+                        AdminView.Height = 30;
+                });
+
+                _unblockRemoving.onClick.AddListener(() =>
+                {
+                    foreach (var view in _meshes)
+                    {
+                        view.UnblockRemove();
+                    }
+                });
+
+            }
         }
 
 
@@ -129,6 +152,12 @@ namespace TadWhat.ACraft.ChunckEditor
         {
 
             yield return new WaitForSeconds(2);
+
+            if(_newNameFile == null)
+            {
+
+            }
+
             chunckEditor.LoadChuncks(request);
             flyCam.enabled = true;
             this.gameObject.SetActive(false);

@@ -49,33 +49,49 @@ namespace TadWhat.ACraft.Constructor
             _inventoryPresenter.InitCreativeInventory(new[]
             {
                 BlockType.Grass,
+
                 BlockType.Wood_Gray,
                 BlockType.Wood,
-                BlockType.White_Wool,
-                BlockType.Bedrock,
-                BlockType.Snow,
+                BlockType.WoodLight,
+
                 BlockType.Boards,
-                BlockType.WoodenLightBoards ,
                 BlockType.Boards_Dark,
+                BlockType.WoodenLightBoards ,
                 BlockType.Modern_Boards,
                 BlockType.Modern_Boards_Dark,
                 BlockType.Modern_Boards_Light,
                 BlockType.Modern_Boards_Light,
+
+                BlockType.WoodenStaircase,
+                BlockType.Glass_White,
+
+                BlockType.Leave,
+
+#region Stones blocks
+                BlockType.Red_Brick,
                 BlockType.Stone,
                 BlockType.Modern_Stone,
                 BlockType.Modern_StoneTree,
-                BlockType.CraftBlock,
-                BlockType.TNT,
+                #endregion
 
-                  BlockType.WoodenDoorDOWN,
-                BlockType.Red_Brick,
-                BlockType.Bedrock,
-                BlockType.Black_Wool,
+#region Wools
+                BlockType.White_Wool,
                 BlockType.BlueLight_Wool,
                 BlockType.Blue_Wool,
                 BlockType.Brown_Wool,
                 BlockType.GreenLight_Wool,
                 BlockType.Green_Wool,
+                BlockType.Black_Wool,
+#endregion
+                BlockType.Bedrock,
+                BlockType.Snow,
+                 
+                BlockType.WoodenDoorDOWN,
+                BlockType.CraftBlock,
+                BlockType.TNT,
+                
+               
+               
             
             });
              
@@ -93,7 +109,7 @@ namespace TadWhat.ACraft.Constructor
                 BlockType.WoodLight,
                 BlockType.WoodenLightBoards ,
                 BlockType.WoodenDoorDOWN,
-                BlockType.Leave,
+                BlockType.CraftBlock,
 
             };
 
@@ -102,7 +118,7 @@ namespace TadWhat.ACraft.Constructor
         }
 
 
-        public XmlMesh LoadMeshFromXML(string name)
+        public static XmlMesh LoadMeshFromXML(string name , string folder = "")
         {
              
              
@@ -110,7 +126,7 @@ namespace TadWhat.ACraft.Constructor
 
             var stream = new XmlSerializer(typeof(XmlMesh));
 
-            string path = Path.Combine(Application.dataPath.Replace("/Assets", "/Meshes"), $"{name}");
+            string path = Path.Combine(Path.Combine(FileMetaData.Path, folder), $"{name}");
 
             using (var s = new FileStream(path,  FileMode.Open ))
             {
@@ -141,10 +157,17 @@ namespace TadWhat.ACraft.Constructor
 
             if (request.Chuncks.Count == 1)
             {
-               
-                XmlMesh xml = LoadMeshFromXML(request.Chuncks[0].FileName);
+                ChunckRequest chunk = request.Chuncks[0];
+                XmlMesh xml = LoadMeshFromXML(chunk.FileName, chunk.FolderName);
 
-                _gen.GenerateExistXmlMesh(Vector3Int.one, xml);
+                FileMetaData.NewChunckFileXmlName = chunk.FileName;
+                FileMetaData.NewChunckFolderName = chunk.FolderName;
+                FileMetaData.NewChunckFileJsonName = Path.ChangeExtension(chunk.FileName, ".json");
+
+                AdminView.Width = xml.ChunckWidth;
+                AdminView.Height = xml.ChunckHeight;
+
+               _gen.GenerateExistXmlMesh(Vector3Int.one, xml);
             }
             else
             {
@@ -153,7 +176,7 @@ namespace TadWhat.ACraft.Constructor
 
                     // if (chunckRef.MeshView == null) continue;
 
-                    XmlMesh xml = LoadMeshFromXML(chunckRef.FileName);
+                    XmlMesh xml = LoadMeshFromXML(chunckRef.FileName, chunckRef.FolderName);
 
                     _gen.GenerateExistXmlMesh(Vector3Int.FloorToInt(chunckRef.WorldPosition), xml);
 

@@ -25,15 +25,17 @@ public class MeshView : MonoBehaviour
     public string Name;
 
     public Vector3 WorldPosition;
-    
+
+    public string FolderName;
 
     public void UnblockRemove() => _removeMesh.interactable = true;
     
 
 
-    public void Init(string fileName)
+    public void Init(string fileName, string folderName)
     {
 
+        FolderName = folderName;
         Name = fileName;
         WorldPosition = Vector3.zero;
         _fileName.text = $"Τΰιλ: <color=green>{fileName}</color>";

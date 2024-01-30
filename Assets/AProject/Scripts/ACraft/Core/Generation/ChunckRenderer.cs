@@ -9,7 +9,9 @@ using System.Xml.Serialization;
 using Core.Models;
 using Cryptograph;
 using Cryptograph.Xml;
+using Palmmedia.ReportGenerator.Core.Common;
 using Photon.Pun.Demo.Procedural;
+using TadWhat.ACraft.Constructor;
 using TadWhat.Auth;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -73,17 +75,20 @@ namespace Core.Generation
           
         }
 
-        public void SaveMeshToXML()
+        public void SaveMeshToFile()
         {
 
             Debug.Log($"<color=green> Высота чанка:</color> {AdminView.Height}");
             Debug.Log($"<color=green> Ширина чанка:</color> {AdminView.Width}");
 
 
-            if (string.IsNullOrEmpty(AdminView.NewChunckFileName))
+            if (string.IsNullOrEmpty(FileMetaData.NewChunckFolderName))
             {
-                DateTime date = DateTime.UtcNow; 
-                AdminView.NewChunckFileName = $"Безымянный_{date.Date.Hour}_{date.Date.Minute}_{date.Date.Second}_{date.Date.Day}_{date.Date.Month}.xml";
+                DateTime date = DateTime.UtcNow;
+                var name = $"Безымянный_{date.Date.Hour}_{date.Date.Minute}_{date.Date.Second}_{date.Date.Day}_{date.Date.Month}";
+
+                Debug.LogWarning($"<color=red> Не найдена дирректория сохранения!</color>");
+                return;
             }
 
             try
@@ -122,7 +127,7 @@ namespace Core.Generation
                         }
                     }
                     xmlMesh.Blocks = xmlBlocks;
-
+                     
                     xmlMesh.ChunckWidth = AdminView.Width;
                     xmlMesh.ChunckHeight = AdminView.Height;
 
@@ -135,16 +140,67 @@ namespace Core.Generation
 
                         xmlMesh.XmlNormalStairs.Add(norm);
                     }
- 
+
+                     
                     var stream = new XmlSerializer(typeof(XmlMesh));
+                     
+                    //Json meta
+                    JsonMeshData jsonMeshData = new JsonMeshData();
+
+                    jsonMeshData.Blocks = new BlockSerializable[xmlMesh.Blocks.Count];
+                    jsonMeshData.NormalStairs = new NormalStairBlockSerializable[xmlMesh.XmlNormalStairs.Count];
+                    
+                    for(int i = 0; i < xmlMesh.Blocks.Count; i++)
+                    {
+                        var block = xmlMesh.Blocks[i];
+                        jsonMeshData.Blocks[i]  = block;
+                        
+                    }
+
+                    for (int i = 0; i < xmlMesh.XmlNormalStairs.Count; i++)
+                    {
+                        var normal = xmlMesh.XmlNormalStairs[i];
+                        jsonMeshData.NormalStairs[i] = normal;
+                    }
+
                     try
                     {
-                        using (var s = new FileStream(Path.Combine(Application.dataPath.Replace("/Assets", "/Meshes"), string.IsNullOrEmpty(AdminView.NewChunckFileName) ? "mesh2.xml" :
-                            AdminView.NewChunckFileName), FileMode.OpenOrCreate))
+                        var xmlPath = Path.Combine(
+                            FileMetaData.Path + $"/{FileMetaData.NewChunckFolderName}",
+                            FileMetaData.NewChunckFileXmlName);
+
+                        var jsPath = Path.Combine(FileMetaData.Path + $"/{FileMetaData.NewChunckFolderName}",
+                           FileMetaData.NewChunckFileJsonName);
+
+
+                        if (File.Exists(xmlPath))
                         {
+                            Debug.Log("<color=red>File deleted  [XML] | Proccess Saving...</color>");
+ 
+                            File.Delete(xmlPath);
+                        }
+                        if (File.Exists(jsPath))
+                        {
+                            Debug.Log("<color=red>File deleted  [JSON] | Proccess Saving...</color>");
+
+                            File.Delete(jsPath);
+                        }
+
+                        using (var s = new FileStream(Path.Combine(
+                            FileMetaData.Path + $"/{FileMetaData.NewChunckFolderName}",
+                            FileMetaData.NewChunckFileXmlName) , FileMode.OpenOrCreate)){
 
                             stream.Serialize(s, xmlMesh);
                         }
+
+                        
+
+                        using (var sw = new StreamWriter(jsPath))
+                        {
+                            var json = JsonUtility.ToJson(jsonMeshData);
+                            sw.Write(json);
+                        }
+
                     }
                     catch(Exception ex)
                     {

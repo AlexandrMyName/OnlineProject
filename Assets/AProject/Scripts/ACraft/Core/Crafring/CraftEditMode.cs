@@ -76,7 +76,7 @@ namespace Core.Crafting
                         meshData.Triangles.ToArray();
                         meshData.Uvs.ToArray();
 
-                        data.Render.SaveMeshToXML();
+                        data.Render.SaveMeshToFile();
 
                         Debug.LogWarning($"<color=green>Кол-во вершин </color>: <color=red>{meshData.Verticals.Count} </color>");
                         Debug.LogWarning($"<color=green>Кол-во треугольников </color>: <color=red>{meshData.Triangles.Count} </color>");
