@@ -34,7 +34,13 @@ namespace TadWhat.ACraft.ChunckEditor
 
         public void InitView(FreeFlyCamera flyCam, EditChunckAndCreation chunckEditor)
         {
-            
+
+            _back.onClick.AddListener(() =>
+            {
+                this.gameObject.SetActive(false);
+                _adminView.gameObject.SetActive(true);
+            });
+
             var objectsInContent = _content.GetComponentsInChildren<MeshView>();
             foreach(var obj in objectsInContent)
             {
@@ -48,6 +54,16 @@ namespace TadWhat.ACraft.ChunckEditor
 
             Debug.Log(infoFolders.Length);
 
+
+            if (infoFolders.Length == 0) _errorText.text = $" <color=red> похоже созданных файлов нет</color>";
+            else
+            {
+                _errorText.text = string.Empty;
+            }
+
+            int counterXposition = 1;
+            int counterYposition = 1;
+
             foreach (var infoFolder in infoFolders)
             {
 
@@ -58,6 +74,7 @@ namespace TadWhat.ACraft.ChunckEditor
 
                 FileInfo[] info = dir.GetFiles("*.*");
 
+                 
                 foreach (FileInfo f in info)
                 {
 
@@ -70,27 +87,24 @@ namespace TadWhat.ACraft.ChunckEditor
                     var meshView = meshViewInstance.GetComponent<MeshView>();
                     meshView.FullPathToFile = f.FullName;
                     _meshes.Add(meshView);
-                    meshView.Init(f.Name, infoFolder.Name);
+
+                   
+                    meshView.Init(f.Name, infoFolder.Name, counterXposition, counterYposition);
+
+                    
+                    
                 }
 
-                if (info.Length == 0) _errorText.text = $" <color=red> похоже созданных файлов нет</color>";
-                else
+                counterYposition++;
+                if (counterYposition > 3)
                 {
-                    _errorText.text = string.Empty;
+                    counterXposition++;
+                    counterYposition = 1;
                 }
-
-
-                _back.onClick.AddListener(() =>
-                {
-                    this.gameObject.SetActive(false);
-                    _adminView.gameObject.SetActive(true);
-                });
-
 
                 _load.onClick.AddListener(() =>
                 {
-
-
+                     
                     LoadChuncksRequest request = new();
 
                     request.Chuncks = new();
@@ -152,12 +166,7 @@ namespace TadWhat.ACraft.ChunckEditor
         {
 
             yield return new WaitForSeconds(2);
-
-            if(_newNameFile == null)
-            {
-
-            }
-
+             
             chunckEditor.LoadChuncks(request);
             flyCam.enabled = true;
             this.gameObject.SetActive(false);

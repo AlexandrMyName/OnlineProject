@@ -50,9 +50,17 @@ namespace TadWhat.Auth
 
             _fileName.onValueChanged.AddListener(value =>
             {
-                FileMetaData.NewChunckFileXmlName = value + ".xml";
-                FileMetaData.NewChunckFolderName = value;
-                FileMetaData.NewChunckFileJsonName = value + ".json";
+                 
+                if(string.IsNullOrEmpty(value))
+                {
+                    _createNew.interactable = false;
+                }
+                else
+                {
+                    FileMetaData.NewChunckFileXmlName = value + ".xml";
+                    FileMetaData.NewChunckFolderName = value;
+                    FileMetaData.NewChunckFileJsonName = value + ".json";
+                }
             });
 
             _myMeshes.onClick.AddListener(() =>
@@ -86,6 +94,7 @@ namespace TadWhat.Auth
                 {
                     if (parseVal != 0)
                     {
+                        Debug.LogWarning("Изменение размера чанка в версии v 0.1.1 недоступно");
                           _height = parseVal;
                            AdminView.Height = parseVal;
                     }
@@ -112,6 +121,11 @@ namespace TadWhat.Auth
                 this.gameObject.SetActive(false);
                 _gameWindow.gameObject.SetActive(true);
             });
+
+            _widthChunck.text = "128";
+            _heightChunck.text = "30";
+            _widthChunck.interactable = false;
+            _heightChunck.interactable = false;
         }
 
 
@@ -121,8 +135,9 @@ namespace TadWhat.Auth
             yield return new WaitForSeconds(2);
 
             var folder = Directory.CreateDirectory(Path.Combine(FileMetaData.Path,FileMetaData.NewChunckFolderName));
-            
-            _chunckEditor.CreateNewChunck(_width, _height, FileMetaData.NewChunckFolderName);
+            var meta = FileMetaData.CreateMeta(FileMetaData.NewChunckFileXmlName, FileMetaData.NewChunckFileJsonName, FileMetaData.NewChunckFolderName);
+             
+            _chunckEditor.CreateNewChunck(_width, _height, meta);
             _flyCam.enabled = true;
             this.gameObject.SetActive(false);
         }
@@ -130,11 +145,12 @@ namespace TadWhat.Auth
         private void Update()
         {
 
-            if(_width > 0 && _height > 0)
+            if(_width > 0 && _height > 0 && _fileName.text != string.Empty)
             {
                 _createNew.interactable = true;
-               
+
             }
+            
         }
     }
 

@@ -86,6 +86,17 @@ public class FirstPersonMovement : MonoBehaviourPunCallbacks, IPunObservable
             _health = 100;//?
             _healthText.text = _health.ToString();
             instance = gameObject;
+
+            var shopKeepers = GameObject.FindGameObjectsWithTag("ShopKeeper");
+
+            foreach (var shopKeeper in shopKeepers)
+            {
+
+                var lookAt = shopKeeper.AddComponent<LookAtObject>();
+
+                lookAt.Init(this.transform);
+            }
+
         }
         DontDestroyOnLoad(gameObject);
     }

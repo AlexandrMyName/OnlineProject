@@ -237,6 +237,55 @@ MonoBehaviour:
     BackSide: {x: 8, y: 12}
     TopSide: {x: 7, y: 12}
     BottomSide: {x: 7, y: 12}
+  - BlockType: 62
+    LeftSide: {x: 13, y: 3}
+    RightSide: {x: 13, y: 3}
+    FrontSide: {x: 13, y: 3}
+    BackSide: {x: 13, y: 3}
+    TopSide: {x: 13, y: 3}
+    BottomSide: {x: 8, y: 8}
+  - BlockType: 63
+    LeftSide: {x: 1, y: 16}
+    RightSide: {x: 1, y: 16}
+    FrontSide: {x: 1, y: 16}
+    BackSide: {x: 1, y: 16}
+    TopSide: {x: 1, y: 16}
+    BottomSide: {x: 8, y: 8}
+  - BlockType: 64
+    LeftSide: {x: 5, y: 2}
+    RightSide: {x: 5, y: 2}
+    FrontSide: {x: 5, y: 2}
+    BackSide: {x: 5, y: 2}
+    TopSide: {x: 5, y: 2}
+    BottomSide: {x: 8, y: 8}
+  - BlockType: 65
+    LeftSide: {x: 4, y: 1}
+    RightSide: {x: 4, y: 1}
+    FrontSide: {x: 4, y: 1}
+    BackSide: {x: 4, y: 1}
+    TopSide: {x: 4, y: 1}
+    BottomSide: {x: 8, y: 8}
+  - BlockType: 66
+    LeftSide: {x: 6, y: 10}
+    RightSide: {x: 6, y: 10}
+    FrontSide: {x: 6, y: 10}
+    BackSide: {x: 6, y: 10}
+    TopSide: {x: 6, y: 10}
+    BottomSide: {x: 8, y: 8}
+  - BlockType: 67
+    LeftSide: {x: 5, y: 10}
+    RightSide: {x: 5, y: 10}
+    FrontSide: {x: 5, y: 10}
+    BackSide: {x: 5, y: 10}
+    TopSide: {x: 5, y: 10}
+    BottomSide: {x: 8, y: 8}
+  - BlockType: 68
+    LeftSide: {x: 7, y: 10}
+    RightSide: {x: 7, y: 10}
+    FrontSide: {x: 7, y: 10}
+    BackSide: {x: 7, y: 10}
+    TopSide: {x: 7, y: 10}
+    BottomSide: {x: 8, y: 8}
   TableWidth: 16
   TableHeight: 16
   TableWaterWidth: 5

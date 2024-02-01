@@ -48,6 +48,16 @@ public class TextureRenderer  : IDisposable
         float y0 = textureUV.y - 1 > 0 ? (textureUV.y - 1) / (block == BlockType.Water ? heightWater : height) : 0.0f;
         float y1 = textureUV.y > 0 ? textureUV.y / (block == BlockType.Water ? heightWater : height) : 1f;
 
+        if((int)block >= 62 && (int)block <= 68)//Grass трава
+        {
+            var offset = 0.003f;
+            x0 += offset;
+            x1 -= offset;
+            y0 += offset;
+            y1 -= offset;
+        }
+
+
         if (sideType == SideData.Left || sideType == SideData.Front || sideType == SideData.Top || sideType == SideData.Down)
         {
             uvs.Add(new Vector2(x0, y0));

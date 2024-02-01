@@ -26,7 +26,7 @@ namespace Cryptograph
 
 #else
 
-            return Path.Combine(Application.persistentDataPath, "Meshes");
+            return System.IO.Path.Combine(Application.persistentDataPath, "Meshes");
 
 #endif
             }
@@ -34,6 +34,30 @@ namespace Cryptograph
             {
 
             }
+        }
+
+
+        public static MetaData CreateMeta(string fileXmlMesh, string fileJsonName, string folderName)
+        {
+            
+            return new MetaData(fileXmlMesh,fileJsonName,folderName);
+        }
+    }
+
+    public struct MetaData
+    {
+
+        public string FileXmlName;
+        public string FileJsonName;
+        public string FolderName;
+
+
+        public MetaData(string fileXmlMesh,string fileJsonName, string folderName)
+        {
+            FileXmlName = fileXmlMesh;
+
+            FileJsonName = fileJsonName;
+            FolderName = folderName;
         }
     }
 }

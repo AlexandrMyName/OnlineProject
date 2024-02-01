@@ -5,11 +5,8 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
- 
+using TadWhat.Auth;
 using UnityEngine;
- 
-
-
 namespace Core.Generation
 {
 
@@ -243,7 +240,7 @@ namespace Core.Generation
                     _worldObjects.ChunckData.Add(worldPosition, data);
                     data.ChunckPosition = worldPosition;
 
-                    InstantiateRenderStream(data);
+                    InstantiateRenderStream(data, new MetaData());// ???
                     yield return seconds;
                 }
             }
@@ -251,14 +248,14 @@ namespace Core.Generation
 
          
          
-        public void GenerateOneEmptyChunck(Vector3Int size)
+        public void GenerateOneEmptyChunck(Vector3Int size, MetaData meta)
         {
 
             ChunckData data = GetEmptyChunkData(size);
 
             try
             {
-                InstantiateRenderStream(data, true);
+                InstantiateRenderStream(data, meta,true);
             }
             catch (Exception ex)
             {
@@ -268,7 +265,7 @@ namespace Core.Generation
         }
 
 
-        public void GenerateExistXmlMesh(Vector3Int globalWorldPosition, XmlMesh xml)
+        public void GenerateExistXmlMesh(Vector3Int globalWorldPosition, XmlMesh xml, MetaData meta)
         {
 
             try
@@ -310,7 +307,7 @@ namespace Core.Generation
 
                     data.ChunckPosition = worldPosition;
                      
-                    data.Render = new ChunckRenderer(_textureConfig, 14);
+                    data.Render = new ChunckRenderer(_textureConfig, 14, meta);
 
                     data.Render.SetExistData(xml, data);
                     InstantiateStreamForExistRender(data, new Vector3Int(xml.ChunckWidth, xml.ChunckHeight, xml.ChunckWidth));
@@ -332,11 +329,11 @@ namespace Core.Generation
             BoundsChunck = size;
 
             BlockType[,,] blocks = new BlockType[BoundsChunck.x, BoundsChunck.y, BoundsChunck.z];
-            blocks[11, 0, 11] = BlockType.Grass;
 
-            for (int i = 0; i < 20; i++)
+             
+            for (int i = 1; i < 20; i++)
             {
-                blocks[11, i, 11] = BlockType.Grass;
+                blocks[12, i, 12] = BlockType.Stone;
             }
 
 
@@ -349,12 +346,12 @@ namespace Core.Generation
         }
 
 
-        private void InstantiateRenderStream(ChunckData data,bool notGame = false)
+        private void InstantiateRenderStream(ChunckData data, MetaData meta,bool notGame = false )
         {
 
             Task.Factory.StartNew(() =>
             {
-                ChunckRenderer render = new(_textureConfig, 14);//Int - waterHeight
+                ChunckRenderer render = new(_textureConfig, 14, meta);//Int - waterHeight
                 Debug.Log("<color=red>œŒ“Œ  —Œ«ƒ¿Õ»ﬂ</color> 0.0.0.0");
 
                 MeshData meshData = null;
@@ -367,7 +364,7 @@ namespace Core.Generation
                 {
                     meshData = MeshBuilder.GenerateMeshData(render, data);
                 }
-               
+
 
                 _meshDataQueue.Enqueue(meshData);
             });

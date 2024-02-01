@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Serialization;
 using Core.Models;
 using Cryptograph;
-using Cryptograph.Xml;
-using Palmmedia.ReportGenerator.Core.Common;
-using Photon.Pun.Demo.Procedural;
-using TadWhat.ACraft.Constructor;
 using TadWhat.Auth;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -22,33 +14,33 @@ namespace Core.Generation
 
     public class ChunckRenderer
     {
-        private List<Vector3> _verticals;
-        private List<int> _triangles;
-
-        private int _waterHeight;
-
-        private List<Vector3> _waterVerticals;
-        private List<int> _waterTriangles;
-
+         
         public bool IsSaveProccess;
 
         public Dictionary<Vector3Int,Vector3> NormalsStairs = new Dictionary<Vector3Int, Vector3>();
 
-        
         private TextureRenderer _textureRender;
         private ChunckData _data;
         private bool _isGenerated;
+        private Vector3Int _bounds;
+        private bool _notRegenerate;
+        private int _waterHeight;
+        private List<Vector3> _verticals;
+        private List<int> _triangles;
+        private List<Vector3> _waterVerticals;
+        private List<int> _waterTriangles;
 
-        Vector3Int _bounds;
-        bool _notRegenerate;
+        private MetaData _meta;
 
-        public ChunckRenderer(TextureDataConfig textureConfig, int waterHeight)
+
+        public ChunckRenderer(TextureDataConfig textureConfig, int waterHeight, MetaData meta)
         {
+            _meta = meta;
             _textureRender = new TextureRenderer(textureConfig);
             _waterHeight = waterHeight;
-            
         }
 
+        
 
         private void SetNormalStairs(List<XmlNormalStairs> normalStairs)
         {
@@ -59,7 +51,6 @@ namespace Core.Generation
             {
 
                 NormalsStairs.Add(key.Position, key.Normal);
-               
             }
         }
 
@@ -72,9 +63,9 @@ namespace Core.Generation
             _textureRender.SetUVs(xmlMesh.Uvs);
             data.Render = this;
             SetNormalStairs(xmlMesh.XmlNormalStairs);
-          
         }
 
+#region Saving
         public void SaveMeshToFile()
         {
 
@@ -82,7 +73,7 @@ namespace Core.Generation
             Debug.Log($"<color=green> Ширина чанка:</color> {AdminView.Width}");
 
 
-            if (string.IsNullOrEmpty(FileMetaData.NewChunckFolderName))
+            if (string.IsNullOrEmpty(_meta.FolderName))
             {
                 DateTime date = DateTime.UtcNow;
                 var name = $"Безымянный_{date.Date.Hour}_{date.Date.Minute}_{date.Date.Second}_{date.Date.Day}_{date.Date.Month}";
@@ -166,11 +157,11 @@ namespace Core.Generation
                     try
                     {
                         var xmlPath = Path.Combine(
-                            FileMetaData.Path + $"/{FileMetaData.NewChunckFolderName}",
-                            FileMetaData.NewChunckFileXmlName);
+                            FileMetaData.Path + $"/{_meta.FolderName}",
+                           _meta.FileXmlName);
 
-                        var jsPath = Path.Combine(FileMetaData.Path + $"/{FileMetaData.NewChunckFolderName}",
-                           FileMetaData.NewChunckFileJsonName);
+                        var jsPath = Path.Combine(FileMetaData.Path + $"/{_meta.FolderName}",
+                           _meta.FileJsonName);
 
 
                         if (File.Exists(xmlPath))
@@ -187,8 +178,8 @@ namespace Core.Generation
                         }
 
                         using (var s = new FileStream(Path.Combine(
-                            FileMetaData.Path + $"/{FileMetaData.NewChunckFolderName}",
-                            FileMetaData.NewChunckFileXmlName) , FileMode.OpenOrCreate)){
+                            FileMetaData.Path + $"/{_meta.FolderName}",
+                            _meta.FileXmlName) , FileMode.OpenOrCreate)){
 
                             stream.Serialize(s, xmlMesh);
                         }
@@ -214,8 +205,9 @@ namespace Core.Generation
                 Debug.LogWarning(ex);
             }
         }
-        
-        
+#endregion
+
+
         public MeshData Generate(ChunckData chunckData )
         {
             CreateChunck(chunckData);
@@ -264,12 +256,14 @@ namespace Core.Generation
 
             if (_data == null) return null;
 
-            if(_bounds != Vector3Int.zero)
-                Generate(normal,_bounds);
+            if (_bounds != Vector3Int.zero)
+                Generate(normal, _bounds);
             else
             {
                 Generate(normal);
             }
+
+
             MeshData meshData = new();
             meshData.SetTriangleBufferData(_triangles);
             meshData.SetVertexBufferData(_verticals);
@@ -330,8 +324,7 @@ namespace Core.Generation
         private void Generate(Vector3 normal, Vector3 worldBounds)
         {
             Init();
-            //SetWaterBlocks();
-
+            
             for (int y = 0; y < worldBounds.y; y++)
             {
                 for (int x = 0; x < worldBounds.x; x++)
@@ -372,40 +365,52 @@ namespace Core.Generation
              
             if (GetBlockAtPosition(blockPos) == 0) return; //?
              
-            if (type != BlockType.WoodenStaircase && type != BlockType.WoodenDoorDOWN)
+            if (type != BlockType.WoodenStaircase && type != BlockType.WoodenDoorDOWN && (int)type < 62 || (int)type > 68)
             {
                 if (type != BlockType.Water && type != BlockType.Glass_White && type != BlockType.Leave)
                 {
                     if ((GetBlockAtPosition(blockPos + Vector3Int.right) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Glass_White)) CreateRightSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.right) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.right) <= 68)) CreateRightSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.left) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Glass_White)) CreateLeftSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.left) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.left) <= 68)) CreateLeftSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.forward) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Glass_White)) CreateFrontSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.forward) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.forward) <= 68)) CreateFrontSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.back) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Glass_White)) CreateBackSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.back) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.back) <= 68)) CreateBackSide(blockPos, type);
 
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.up) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Glass_White)) CreateTopSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.up) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.up) <= 68)) CreateTopSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.down) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.down) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.down) <= 68)) CreateDownSide(blockPos, type);
                 }
                 else
                 {
@@ -477,34 +482,58 @@ namespace Core.Generation
                     if ((GetBlockAtPosition(blockPos + Vector3Int.right) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Glass_White)) CreateRightSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.right) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.right) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.right) <= 68)) CreateRightSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.left) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Glass_White)) CreateLeftSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.left) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.left) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.left) <= 68)) CreateLeftSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.forward) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Glass_White)) CreateFrontSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.forward) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.forward) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.forward) <= 68)) CreateFrontSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.back) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Glass_White)) CreateBackSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.back) == BlockType.Glass_White ) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.back) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.back) <= 68)) CreateBackSide(blockPos, type);
 
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.up) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Glass_White)) CreateTopSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.up) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.up) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.up) <= 68)) CreateTopSide(blockPos, type);
 
                     if ((GetBlockAtPosition(blockPos + Vector3Int.down) == 0) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Water) ||
                         (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.WoodenStaircase) ||
-                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White)) CreateDownSide(blockPos, type);
+                        (GetBlockAtPosition(blockPos + Vector3Int.down) == BlockType.Glass_White) ||
+                        ((int)GetBlockAtPosition(blockPos + Vector3Int.down) >= 62 &&
+                        (int)GetBlockAtPosition(blockPos + Vector3Int.down) <= 68)) CreateDownSide(blockPos, type);
                     
+                }
+                else if((int)type >= 62 && (int)type <= 68)
+                {
+                    //проверка на дыры добавить !!! ТРАВА И Т.П
+                      CreateLeftSide(blockPos, type, 0, 0, 0, 0.5f);
+                      CreateRightSide(blockPos, type , -0.5f);
+
+                      CreateBackSide(blockPos, type, 0, 0, 0, 0f,0f,  0.5f);
+                      CreateFrontSide(blockPos, type, 0, 0,  -0.5f);
+
+                      CreateINDownSide(blockPos, type);
+                     
                 }
             }
 
@@ -633,8 +662,7 @@ namespace Core.Generation
         private void CreateRightSide(Vector3Int blockPos, BlockType type, float XScale = 0, float  YScale = 0, float ZScale = 0 , float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
-             
-
+ 
             _textureRender.AddTexture(type, SideData.Right);
 
             verticals.Add((new Vector3(1 + XScale, 0 + YOffSet, 0 + ZOffSet) + blockPos) * WorldGeneration.Scale);
@@ -647,7 +675,6 @@ namespace Core.Generation
         private void CreateLeftSide(Vector3Int blockPos, BlockType type, float XScale = 0, float YScale = 0, float ZScale = 0, float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
-            
 
             _textureRender.AddTexture(type, SideData.Left);
 
@@ -660,8 +687,8 @@ namespace Core.Generation
         private void CreateFrontSide(Vector3Int blockPos, BlockType type, float XScale= 0, float YScale = 0, float ZScale = 0, float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
-            
-            _textureRender.AddTexture(type, SideData.Front);
+ 
+           _textureRender.AddTexture(type, SideData.Front);
 
             verticals.Add((new Vector3(0 + XOffSet, 0 + YOffSet, 1 + ZScale) + blockPos) * WorldGeneration.Scale);
             verticals.Add((new Vector3(1 + XScale, 0 + YOffSet, 1 + ZScale) + blockPos) * WorldGeneration.Scale);
@@ -673,6 +700,7 @@ namespace Core.Generation
         private void CreateBackSide(Vector3Int blockPos, BlockType type, float XScale = 0, float YScale = 0, float ZScale = 0, float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
+
             
             _textureRender.AddTexture(type, SideData.Back);
 
@@ -685,7 +713,7 @@ namespace Core.Generation
         private void CreateTopSide(Vector3Int blockPos, BlockType type, float XScale = 0, float YScale = 0, float ZScale = 0, float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
-            
+ 
             _textureRender.AddTexture(type, SideData.Top);
 
             verticals.Add((new Vector3(0 + XOffSet, 1 + YScale, 0 + ZOffSet) + blockPos) * WorldGeneration.Scale);
@@ -697,9 +725,8 @@ namespace Core.Generation
         private void CreateDownSide(Vector3Int blockPos, BlockType type , float XScale = 0, float YScale = 0, float ZScale = 0, float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
-            
 
-            _textureRender.AddTexture(type, SideData.Down);
+             _textureRender.AddTexture(type, SideData.Down);
 
             verticals.Add((new Vector3(0 + XOffSet, 0 + YOffSet, 0 + ZOffSet) + blockPos) * WorldGeneration.Scale);
             verticals.Add((new Vector3(1 + XScale, 0 + YOffSet, 0 + ZOffSet) + blockPos) * WorldGeneration.Scale);
@@ -715,7 +742,7 @@ namespace Core.Generation
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
 
-
+            
             _textureRender.AddTexture(type, SideData.Right);
 
             verticals.Add((new Vector3(1 + XScale, 0 + YOffSet, 0 + ZOffSet) + blockPos) * WorldGeneration.Scale);
@@ -729,9 +756,8 @@ namespace Core.Generation
         private void CreateINLeftSide(Vector3Int blockPos, BlockType type, float XScale = 0, float YScale = 0, float ZScale = 0, float XOffSet = 0, float YOffSet = 0, float ZOffSet = 0)
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
-
-
-            _textureRender.AddTexture(type, SideData.Left);
+ 
+           _textureRender.AddTexture(type, SideData.Left);
 
             verticals.Add((new Vector3(0 + XOffSet, 0 + YOffSet, 0 + ZOffSet) + blockPos) * WorldGeneration.Scale);
             
@@ -744,6 +770,7 @@ namespace Core.Generation
         {
             List<Vector3> verticals = type == BlockType.Water ? _waterVerticals : _verticals;
 
+            
             _textureRender.AddTexture(type, SideData.Front);
 
             verticals.Add((new Vector3(0 + XOffSet, 0 + YOffSet, 1 + ZScale) + blockPos) * WorldGeneration.Scale);
@@ -802,7 +829,7 @@ namespace Core.Generation
         private BlockType GetBlockAtPosition(Vector3Int blockPos)
         {
             if (blockPos.x >= 0 && blockPos.y >= 0 && blockPos.z >= 0
-                && blockPos.x < WorldGeneration.Width && blockPos.y < WorldGeneration.Height && blockPos.z < WorldGeneration.Width
+                && blockPos.x < _bounds.x && blockPos.y < _bounds.y && blockPos.z < _bounds.z
                  )
             {
 

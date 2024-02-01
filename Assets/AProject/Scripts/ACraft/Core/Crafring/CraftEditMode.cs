@@ -65,29 +65,32 @@ namespace Core.Crafting
                     Vector3Int chunckOrigin = new Vector3Int(chunckPosition.x, 0, chunckPosition.y) * WorldGeneration.Width; //Перевод 2D Global в 3D Global
                     Vector3Int localCubePosition = worldPosition - chunckOrigin;// world (позиция куба) - global chunck = локальные координаты куба
 
-                    data.Blocks[localCubePosition.x, localCubePosition.y, localCubePosition.z] = destroy ? BlockType.Air : CurrentBlock.CurrentCraftingBlock;
+                    
+
+
+                    
                      
                     if (destroy && !save) data.Render.ClearNormalData(localCubePosition);
 
                     if (save)
                     {
-                        MeshData meshData = data.Render.SetBlock(hit.normal);
-                        meshData.Verticals.ToArray();
-                        meshData.Triangles.ToArray();
-                        meshData.Uvs.ToArray();
-
+                          
                         data.Render.SaveMeshToFile();
-
-                        Debug.LogWarning($"<color=green>Кол-во вершин </color>: <color=red>{meshData.Verticals.Count} </color>");
-                        Debug.LogWarning($"<color=green>Кол-во треугольников </color>: <color=red>{meshData.Triangles.Count} </color>");
-                        Debug.LogWarning($"<color=green>Кол-во UV координат </color>: <color=red>{meshData.Uvs.Count} </color>");
-                        Debug.LogWarning($"<color=green>Позиция в мировом пространстве </color>: <color=red>{meshData.WorldPositionStay} </color>");
-                        Debug.LogWarning("Сохранение в xml данных о меше <color=red>SAVE LOAD</color>");
+                         
+                        Debug.LogWarning("Сохранение в xml данных о меше <color=red>SAVE</color>");
                     }
                     else
                     {
-                        
+
+                        if (data.Blocks.GetLength(1) == localCubePosition.y) return;
+
+                        if (localCubePosition.y <= 0) return;
+
+                        data.Blocks[localCubePosition.x, localCubePosition.y, localCubePosition.z] = destroy ? BlockType.Air : CurrentBlock.CurrentCraftingBlock;
+
                         MeshData meshData = data.Render.SetBlock(hit.normal);
+                        if (meshData == null) return;
+
                         MeshFilter filter = chunckObject.GetComponent<MeshFilter>();
                         MeshRenderer render = chunckObject.GetComponent<MeshRenderer>();
                         MeshCollider collider = chunckObject.GetComponent<MeshCollider>();
@@ -105,8 +108,10 @@ namespace Core.Crafting
                         mesh.RecalculateNormals();
                         mesh.RecalculateBounds();
                         mesh.Optimize();
-                         
+
                         collider.sharedMesh = mesh;
+
+
                     }
                 }
             }

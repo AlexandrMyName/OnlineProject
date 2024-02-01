@@ -9,6 +9,11 @@ using UnityEngine;
 using System.Xml.Serialization;
 using TadWhat.Auth;
 using System;
+using TadWhat.ACraft.ChunckEditor;
+using System.Threading.Tasks;
+
+using UnityEngine.UI;
+using System.Collections;
 
 namespace TadWhat.ACraft.Constructor
 {
@@ -27,6 +32,9 @@ namespace TadWhat.ACraft.Constructor
         [SerializeField] private InventoryBarView _inventoryBarView;
         [SerializeField] private Inventory _inventoryPresenter;
 
+        [SerializeField] private ChunckEditorPauseView _pauseView;
+
+        [SerializeField] private Slider _sliderLoadBar;
 
         private WorldChunckObjects _wco;
         private Generator _gen;
@@ -89,10 +97,11 @@ namespace TadWhat.ACraft.Constructor
                 BlockType.WoodenDoorDOWN,
                 BlockType.CraftBlock,
                 BlockType.TNT,
-                
-               
-               
-            
+
+
+                BlockType.Grass_green, BlockType.Grass_green_02, BlockType.Grass_green_03, BlockType.Grass_green_04,
+
+                BlockType.Flower, BlockType.Flower_02, BlockType.Flower_03,
             });
              
         }
@@ -139,15 +148,17 @@ namespace TadWhat.ACraft.Constructor
         }
          
 
-        public void CreateNewChunck(int width, int height, string fileName)
+        public void CreateNewChunck(int width, int height, MetaData meta)
         {
 
-            _gen.GenerateOneEmptyChunck(new Vector3Int(width, height, width));
+            
+            _gen.GenerateOneEmptyChunck(new Vector3Int(width, height, width), meta);
 
             _inventoryBar.LoadDataBar(LoadInventoryBar(), _inventoryBarView, _iconsItemConfigs);
             _inventoryBarView.gameObject.SetActive(true);
             _craft = new CraftEditMode(_wco, _matChunck, _playerRoot);
             _craft.InstallingBlocksSetUp(true);
+            _pauseView.Init(_wco);
             _isInitEditor = true;
         }
 
@@ -155,6 +166,7 @@ namespace TadWhat.ACraft.Constructor
         public void LoadChuncks(LoadChuncksRequest request)
         {
 
+             
             if (request.Chuncks.Count == 1)
             {
                 ChunckRequest chunk = request.Chuncks[0];
@@ -167,28 +179,59 @@ namespace TadWhat.ACraft.Constructor
                 AdminView.Width = xml.ChunckWidth;
                 AdminView.Height = xml.ChunckHeight;
 
-               _gen.GenerateExistXmlMesh(Vector3Int.one, xml);
+
+                var meta = FileMetaData.CreateMeta(chunk.FileName, Path.ChangeExtension(chunk.FileName, ".json"), chunk.FolderName);
+               _gen.GenerateExistXmlMesh(Vector3Int.one, xml, meta);
             }
             else
             {
-                foreach (var chunckRef in request.Chuncks)
-                {
 
-                    // if (chunckRef.MeshView == null) continue;
-
-                    XmlMesh xml = LoadMeshFromXML(chunckRef.FileName, chunckRef.FolderName);
-
-                    _gen.GenerateExistXmlMesh(Vector3Int.FloorToInt(chunckRef.WorldPosition), xml);
-
-                }
+                _sliderLoadBar.maxValue = request.Chuncks.Count;
+                _sliderLoadBar.value = 0;
+                _sliderLoadBar.GetComponentInParent<Transform>().gameObject.SetActive(true);
+                 
+                StartCoroutine(GenerateAll(request.Chuncks));
             }
+
             _inventoryBar.LoadDataBar(LoadInventoryBar(), _inventoryBarView, _iconsItemConfigs);
             _inventoryBarView.gameObject.SetActive(true);
             _craft = new CraftEditMode(_wco, _matChunck, _playerRoot);
             _craft.InstallingBlocksSetUp(true);
+            _pauseView.Init(_wco);
             _isInitEditor = true;
         }
 
+
+        private IEnumerator GenerateAll(List<ChunckRequest> request)
+        {
+
+            int count = 0;
+            
+
+            yield return new WaitForSeconds(0.7f);
+
+            foreach (var chunckRef in request)
+            {
+                 
+                XmlMesh xml = LoadMeshFromXML(chunckRef.FileName, chunckRef.FolderName);
+                MetaData meta = FileMetaData.CreateMeta(chunckRef.FileName, Path.ChangeExtension(chunckRef.FileName, ".json"), chunckRef.FolderName);
+                
+
+
+                _gen.GenerateExistXmlMesh(Vector3Int.FloorToInt(chunckRef.WorldPosition), xml, meta);
+
+                count++;
+                UpdateLoadBar(count);
+                yield return new WaitForSeconds(.5f);
+            }
+           _sliderLoadBar.transform.parent.gameObject.SetActive(false);
+        }
+
+
+        private void UpdateLoadBar(int value)
+        {
+            _sliderLoadBar.value = value;
+        }
 
         private void Update()
         {
@@ -198,7 +241,8 @@ namespace TadWhat.ACraft.Constructor
             _inventoryPresenter.RunInventory();
             _inventoryBar.RunInventoryButtons();
             _gen.RunEditGeneration();
-            _craft.RunCraftingBlocks();
+            _craft.RunCraftingBlocks(); 
+            _pauseView.UpdatePauseView();
         }
     }
 }

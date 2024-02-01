@@ -88,6 +88,8 @@ public class FreeFlyCamera : MonoBehaviour
     private Vector3 _initPosition;
     private Vector3 _initRotation;
 
+    public bool IsActive { get => _active; set { _active = value; } }
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
@@ -101,6 +103,9 @@ public class FreeFlyCamera : MonoBehaviour
     {
         _initPosition = transform.position;
         _initRotation = transform.eulerAngles;
+
+
+        
     }
 
     private void OnEnable()

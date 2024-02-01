@@ -32,7 +32,7 @@ public class MeshView : MonoBehaviour
     
 
 
-    public void Init(string fileName, string folderName)
+    public void Init(string fileName, string folderName, float xChunck = 0, float yChunck = 0)
     {
 
         FolderName = folderName;
@@ -92,6 +92,14 @@ public class MeshView : MonoBehaviour
                 _zWorld.text = string.Empty;
             }
         });
+
+        if(xChunck != 0)
+        {
+         
+            _xWorld.text = xChunck.ToString();
+            _yWorld.text = yChunck.ToString();
+            _toggleAddToCollection.isOn = true;
+        }
 
     }
 

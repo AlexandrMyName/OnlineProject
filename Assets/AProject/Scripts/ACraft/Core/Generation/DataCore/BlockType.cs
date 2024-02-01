@@ -69,5 +69,13 @@ namespace Core.Models
         Player_GoldItem = 59,
         Player_EmeraldItem = 60,
         Player_TritonItem = 61,
+        Grass_green = 62,
+        Grass_green_02 = 63,
+        Grass_green_03 = 64,
+        Grass_green_04 = 65,
+
+        Flower = 66,
+        Flower_02 = 67,
+        Flower_03 = 68,
     }
 }
